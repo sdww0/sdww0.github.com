@@ -3,15 +3,15 @@
 
 	<head>
 		
-<title>First Blog-sdww0</title>
+<title>我的世界1.18mod开发学习-源码解读记录(1)-Item-sdww0</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" type="image/x-icon" href="/image/favicon.ico">
 
 
-<meta name="keywords" content="First,">
-<meta name="description" content="This is my first blog for test">
+<meta name="keywords" content="我的世界,mod开发,1.18,记录,学习,Item,">
+<meta name="description" content="">
 
 
 <script src="/js/jquery.min.js"></script>
@@ -258,11 +258,21 @@
         <ul class="tag">
             
             
-            <li><a href="/tags/First">First</a></li>
+            <li><a href="/tags/我的世界">我的世界</a></li>
+            
+            <li><a href="/tags/mod开发">mod开发</a></li>
+            
+            <li><a href="/tags/1.18">1.18</a></li>
+            
+            <li><a href="/tags/记录">记录</a></li>
+            
+            <li><a href="/tags/学习">学习</a></li>
+            
+            <li><a href="/tags/Item">Item</a></li>
             
             
         </ul>
-        <h1>First Blog</h1>
+        <h1>我的世界1.18mod开发学习-源码解读记录(1)-Item</h1>
         <div class="article-info">
             <div class="article-author">
                 
@@ -275,17 +285,56 @@
                 </svg>
                 
                 <span> <a href="">sdww0</a></span>
-                <p>2022-02-12 23:00:39</p>
+                <p>2022-02-15 15:49:24</p>
             </div>
         </div>
     </div>
 </div>
 <div class="article-content">
     <div id="article" class="content">
-        <p>This is sdww0’s first blog</p>
-<h1 id="First-blog"><a href="#First-blog" class="headerlink" title="First blog"></a>First blog</h1><h2 id="Second"><a href="#Second" class="headerlink" title="Second"></a>Second</h2><h3 id="Third"><a href="#Third" class="headerlink" title="Third"></a>Third</h3><h4 id="Fourth"><a href="#Fourth" class="headerlink" title="Fourth"></a>Fourth</h4><h5 id="Fifth"><a href="#Fifth" class="headerlink" title="Fifth"></a>Fifth</h5><p>Hello My Friend~</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HelloWorld</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">HelloWorld</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;Hello World~&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在学习mod开发时想实现攀岩效果，但是找不到案例，因此希望通过阅读源码了解一些其他的方法，一次性看不完于是记录这些方法方便日后开发</p>
+<p>看的源码有些没有注释..那一部分是看名字以及内容进行的推测，一些解释可能不对（虽然有注释可能理解也不对 )</p>
+<p>首先会从block以及item开始看起</p>
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><ol>
+<li>minecraft:1.18</li>
+<li>forge:1.18.1 - 39.0.76</li>
+<li>java:17</li>
+</ol>
+<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>类前面带一个大写的I代表这个是一个接口，这么命名是为了方便区分</p>
+<h2 id="记录"><a href="#记录" class="headerlink" title="记录"></a>记录</h2><p>Item的依赖树</p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/img.png" alt="img"></p>
+<h3 id="IForgeRegistryEntry"><a href="#IForgeRegistryEntry" class="headerlink" title="IForgeRegistryEntry"></a>IForgeRegistryEntry</h3><p>此为接口，主要定义了三个方法：</p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215210911564.png" alt="image-20220215210911564"></p>
+<p>主要是为了设置注册名以及获得注册名和注册类型，其使用的ResourceLocation主要作用是为了记录namespace和path，可以认为前面的是mod id，后面为你为这个方块&#x2F;物品命名的名字。两者通过:合并</p>
+<p>如我的世界中泥土这两者应为minecraft以及dirt，这一点可以通过IDEA debug认证：</p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215211921176.png" alt="image-20220215211921176"></p>
+<p>可以看见namespace为minecraft，path为dirt，合在一起为minecraft:dirt</p>
+<p>因此，这个接口主要是提供了一个可使用的设置或获取注册名以及当前泛型也就是那个V的class，比如声音，物体等</p>
+<h3 id="ForgeRegistryEntry"><a href="#ForgeRegistryEntry" class="headerlink" title="ForgeRegistryEntry"></a>ForgeRegistryEntry</h3><p>此类也较为简单，定义了五个方法</p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215212724011.png" alt="image-20220215212724011"></p>
+<p>主要是拓展实现了IForgeRgistryEntry的一些方法，如不再限制于ResourceLocation，加入了只用提供两个字符串即可注册，内部含有registryName用于存储ResourceLocation</p>
+<p>值得一提的是，里面的delegate应该是委托，在getRegistryName中得知如果delegate中存储的ResourceLocation不为null则返回存储值，在返回registryName之前</p>
+<h3 id="ItemLike"><a href="#ItemLike" class="headerlink" title="ItemLike"></a>ItemLike</h3><p>只定义了一个方法..效果未知</p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215213928889.png" alt="image-20220215213928889"></p>
+<h3 id="IForgeItem"><a href="#IForgeItem" class="headerlink" title="IForgeItem"></a>IForgeItem</h3><p>重头戏，这个定义了许多的方法..不好截图，最好查看源码，这一块有注释，并且方法名有一些也一目了然</p>
+<p>也有一些方法名要注意名字，比如Piglins为猪灵..</p>
+<p>此处可以利用好IDEA的联想，在想要某个功能的时候按逗号.再选择方法</p>
+<h3 id="Item"><a href="#Item" class="headerlink" title="Item"></a>Item</h3><p>此处开始会出现奇奇怪怪的名字，如p_41394_,p_41446_等，有些需要推断了，同样的，此处的方法也比较多，有一些都是默认定义好的，比如</p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215215937732.png" alt="image-20220215215937732"></p>
+<p>可以看到这两个方法应该是获得喝药水或者吃东西的声音</p>
+<p>构造方法较为重要，里面改变了一些数值</p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215220200600.png" alt="image-20220215220200600"></p>
+<ul>
+<li>category:创造模式的物品栏，可以为null，就不添加到创造模式物品栏</li>
+<li>rarity：罕见度，推测是地牢生成宝箱的时候用的？</li>
+<li>craftingRemainingItem：暂未知，Item中使用这个的也加上了@Deprecated</li>
+<li>maxStackSize:堆叠的最大物品数量</li>
+<li>maxDamage：最大伤害，应该是给剑，镐等用的</li>
+<li>foodProperties：吃的一些属性</li>
+<li>isFireResistant：是否防火</li>
+<li>canRepair：是否能被修复</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>不一定要把全部方法利用的明明白白的，使用的过程应该就能慢慢熟悉了，感觉比较重要的是要先理解mod物品如何注入到我的世界里的，以及实体，合成表，世界生成规则等。总而言之，看源码的过程还蛮有趣的LOL</p>
 
     </div>
 </div>
@@ -315,19 +364,12 @@
 </script>
 <div class="Last-Next">
     
-    <a href="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/">
-        <div class="last">
-            <span>上一篇</span>
-            <p>我的世界1.18mod开发学习-源码解读记录(1)-Item</p>
-        </div>
-    </a>
-    
 
     
-    <a href="/2022/02/12/hello-world/">
+    <a href="/2022/02/12/First-Blog/">
         <div class="next">
             <span>下一篇</span>
-            <p>Hello World</p>
+            <p>First Blog</p>
         </div>
     </a>
     
