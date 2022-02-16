@@ -3,14 +3,14 @@
 
 	<head>
 		
-<title>我的世界1.18mod开发学习-源码解读记录(1)-Item-sdww0</title>
+<title>我的世界1.18mod开发学习-源码解读记录(2)-Block-sdww0</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" type="image/x-icon" href="/image/favicon.ico">
 
 
-<meta name="keywords" content="我的世界,mod开发,1.18,记录,学习,Item,">
+<meta name="keywords" content="我的世界,mod开发,1.18,记录,学习,Block,">
 <meta name="description" content="">
 
 
@@ -268,11 +268,11 @@
             
             <li><a href="/tags/学习">学习</a></li>
             
-            <li><a href="/tags/Item">Item</a></li>
+            <li><a href="/tags/Block">Block</a></li>
             
             
         </ul>
-        <h1>我的世界1.18mod开发学习-源码解读记录(1)-Item</h1>
+        <h1>我的世界1.18mod开发学习-源码解读记录(2)-Block</h1>
         <div class="article-info">
             <div class="article-author">
                 
@@ -285,56 +285,85 @@
                 </svg>
                 
                 <span> <a href="">sdww0</a></span>
-                <p>2022-02-15 15:49:24</p>
+                <p>2022-02-16 11:53:55</p>
             </div>
         </div>
     </div>
 </div>
 <div class="article-content">
     <div id="article" class="content">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在学习mod开发时想实现攀岩效果，但是找不到案例，因此希望通过阅读源码了解一些其他的方法，一次性看不完于是记录这些方法方便日后开发</p>
-<p>看的源码有些没有注释..那一部分是看名字以及内容进行的推测，一些解释可能不对（虽然有注释可能理解也不对 )</p>
-<p>涉及到许多定义游戏内方块或者物体的行为的方法基本不会详细展开，因为这些方法基本上是成群存在，篇幅较长，善用IDEA的联想功能。</p>
-<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><ol>
-<li>minecraft:1.18</li>
-<li>forge:1.18.1 - 39.0.76</li>
-<li>java:17</li>
-</ol>
-<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>类前面带一个大写的I代表这个是一个接口，这么命名是为了方便区分</p>
-<h2 id="记录"><a href="#记录" class="headerlink" title="记录"></a>记录</h2><p>Item的依赖树</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/img.png" alt="img"></p>
-<h3 id="IForgeRegistryEntry"><a href="#IForgeRegistryEntry" class="headerlink" title="IForgeRegistryEntry"></a>IForgeRegistryEntry</h3><p>此为接口，主要定义了三个方法：</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215210911564.png" alt="image-20220215210911564"></p>
-<p>主要是为了设置注册名以及获得注册名和注册类型，其使用的ResourceLocation主要作用是为了记录namespace和path，可以认为前面的是mod id，后面为你为这个方块&#x2F;物品命名的名字。两者通过:合并</p>
-<p>如我的世界中泥土这两者应为minecraft以及dirt，这一点可以通过IDEA debug认证：</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215211921176.png" alt="image-20220215211921176"></p>
-<p>可以看见namespace为minecraft，path为dirt，合在一起为minecraft:dirt</p>
-<p>因此，这个接口主要是提供了一个可使用的设置或获取注册名以及当前泛型也就是那个V的class，比如声音，物体等</p>
-<h3 id="ForgeRegistryEntry"><a href="#ForgeRegistryEntry" class="headerlink" title="ForgeRegistryEntry"></a>ForgeRegistryEntry</h3><p>此类也较为简单，定义了五个方法</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215212724011.png" alt="image-20220215212724011"></p>
-<p>主要是拓展实现了IForgeRgistryEntry的一些方法，如不再限制于ResourceLocation，加入了只用提供两个字符串即可注册，内部含有registryName用于存储ResourceLocation</p>
-<p>值得一提的是，里面的delegate应该是委托，在getRegistryName中得知如果delegate中存储的ResourceLocation不为null则返回存储值，在返回registryName之前</p>
-<h3 id="ItemLike"><a href="#ItemLike" class="headerlink" title="ItemLike"></a>ItemLike</h3><p>只定义了一个方法..效果未知</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215213928889.png" alt="image-20220215213928889"></p>
-<h3 id="IForgeItem"><a href="#IForgeItem" class="headerlink" title="IForgeItem"></a>IForgeItem</h3><p>重头戏，这个定义了许多的方法..不好截图，最好查看源码，这一块有注释，并且方法名有一些也一目了然</p>
-<p>也有一些方法名要注意名字，比如Piglins为猪灵..</p>
-<p>此处可以利用好IDEA的联想，在想要某个功能的时候按逗号.再选择方法</p>
-<h3 id="Item"><a href="#Item" class="headerlink" title="Item"></a>Item</h3><p>此处开始会出现奇奇怪怪的名字，如p_41394_,p_41446_等，有些需要推断了，同样的，此处的方法也比较多，有一些都是默认定义好的，比如</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215215937732.png" alt="image-20220215215937732"></p>
-<p>可以看到这两个方法应该是获得喝药水或者吃东西的声音</p>
-<p>构造方法较为重要，里面改变了一些数值</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215220200600.png" alt="image-20220215220200600"></p>
+        <h2 id=""><a href="#" class="headerlink" title=""></a></h2><h2 id="记录"><a href="#记录" class="headerlink" title="记录"></a>记录</h2><p>首先是Block的依赖树：</p>
+<p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216115519506.png" alt="image-20220216115519506"></p>
+<p>右上角那两个以及左上一个已经在之前提到了，现在就看看剩下的几个</p>
+<h3 id="BlockBehaviour"><a href="#BlockBehaviour" class="headerlink" title="BlockBehaviour"></a>BlockBehaviour</h3><p>与Item相似，这个类中也有许多的Block属性比如声音效果，摩擦力等，其构造采用了BlockBehaviour.Properties，因此最好能了解这里面代表的含义</p>
+<p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216120635562.png" alt="image-20220216120635562"></p>
+<p>这张图片给出的是Properties中的copy，这里面没有复制一个参数叫JumpFactor，只有在蜂蜜快中修改了这个参数。算是一个潜在的bug?</p>
 <ul>
-<li>category:创造模式的物品栏，可以为null，就不添加到创造模式物品栏</li>
-<li>rarity：罕见度，推测是地牢生成宝箱的时候用的？</li>
-<li>craftingRemainingItem：暂未知，Item中使用这个的也加上了@Deprecated</li>
-<li>maxStackSize:堆叠的最大物品数量</li>
-<li>maxDamage：最大伤害，应该是给剑，镐等用的</li>
-<li>foodProperties：吃的一些属性</li>
-<li>isFireResistant：是否防火</li>
-<li>canRepair：是否能被修复</li>
+<li>material：属于哪个材质，之后给出Maaterial类阅读</li>
+<li>destroyTime：摧毁的时间</li>
+<li>explosionResistance：爆炸抗性，应该是对比如苦力怕或tnt爆炸的抗性</li>
+<li>hasCollision：是否有碰撞</li>
+<li>isRandomlyTicking：是否受随机刻的影响，如小麦，胡萝卜等农作物</li>
+<li>lightEmission：光的衰减程度</li>
+<li>materialColor：材质的颜色，看其源码应该为计算不同光亮下方块的总体颜色（？）</li>
+<li>soundType：声音类型，应该是走在上面发出的声音等</li>
+<li>friction：摩擦力</li>
+<li>speedFactor：速度，如灵魂沙，蜂蜜块等。</li>
+<li>dynamicShape：多种形态..不太清楚，Blocks使用该属性的有以下方块：移动的活塞，细雪，滴水钟乳石，脚手架（貌似），推测是为了播放动画？</li>
+<li>canOcclude：推测是能否阻挡光线</li>
+<li>isAir：是否是空气</li>
+<li>requiresCorrectToolFroDrops：是否需要正确的工具才会掉落</li>
 </ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>不一定要把全部方法背下来，使用的过程应该就能慢慢熟悉了。如果需要某些与原版功能类似的物品，可以看看原版的那些物品的源码。</p>
+<h4 id="Material"><a href="#Material" class="headerlink" title="Material"></a>Material</h4><p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216123449003.png" alt="image-20220216123449003"></p>
+<ul>
+<li>color：材质颜色，之前提到过</li>
+<li>pushReaction：被推的时候是什么反应，推测为被活塞推<img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216124340826.png" alt="image-20220216124340826"></li>
+<li>solid：是否是固体</li>
+<li>liquid：是否是液体</li>
+<li>solidBlocking：推测是是否是坚固的方块，参考冰，玻璃，末地传送门等将此设为了false</li>
+<li>replaceable：是否能被替换，比如岩浆你可以直接拿方块右击放置方块</li>
+<li>flammable：是否能被点燃，参考羊毛，树叶，木头等设置此项为true</li>
+<li>blockMotion：是否能阻挡，参考岩浆，细雪等设置此项为false</li>
+</ul>
+<h3 id="IForgeBlock"><a href="#IForgeBlock" class="headerlink" title="IForgeBlock"></a>IForgeBlock</h3><p>这个接口主要也是定义了一些方法，方块可以重写这些方法，比如是否为梯子，是否能被实体破坏，凋零末影龙等，以及是否能被红石链接，在这里就不放了</p>
+<p>善用IDEA的联想功能</p>
+<h3 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h3><p>内含其它的方法，比如stepOn，走在方块上时触发的方法，比如红石矿，走在上面会发亮，fallOn，实体掉在这个方块上，以及其他方法，也不叙述了。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="BlockState"><a href="#BlockState" class="headerlink" title="BlockState"></a>BlockState</h3><p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216125951996.png" alt="image-20220216125951996"></p>
+<p>在BlockState与StateHolder中间还有一层，在BlockBehaviour类中的BlockStateBase</p>
+<p>BlockState自己的东西很少，直接截图可以截下来</p>
+<p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216213401480.png" alt="image-20220216213401480"></p>
+<p>参考：<a target="_blank" rel="noopener" href="https://minecraft.fandom.com/wiki/Block_states">https://minecraft.fandom.com/wiki/Block_states</a></p>
+<p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216132318354.png" alt="image-20220216132318354"></p>
+<h4 id="IForgeBlockState"><a href="#IForgeBlockState" class="headerlink" title="IForgeBlockState"></a>IForgeBlockState</h4><p>还是定义了一些方法，里面跟IForgeBlock相似，是否为梯子那些的方法在里面同样存在</p>
+<h4 id="StateHolder"><a href="#StateHolder" class="headerlink" title="StateHolder"></a>StateHolder</h4><p>推测为具体存储一个方块的某些信息，比如在竹子中调用了其中的setValue这个方法设置了年龄AGE为0或1</p>
+<p>内含四个变量：</p>
+<p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216134623332.png" alt="image-20220216134623332"></p>
+<ul>
+<li>owner：存储的是归属的方块Block</li>
+<li>values：存储的是方块的属性</li>
+<li>neighbours：存储的是某个方块的所有状态，日后使用setValue时其实是从这里面找</li>
+<li>propertiesCodec：推测是将properties序列化（需要确认）</li>
+</ul>
+<h3 id="有趣的东西"><a href="#有趣的东西" class="headerlink" title="有趣的东西"></a>有趣的东西</h3><p>在看BlockState的方法时看到了一个有趣的东西，以前没见过，记录一下</p>
+<p>在BlockState的构造方法中，其传参为</p>
+<p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216213455479.png" alt="image-20220216213455479"></p>
+<p>在看调用这个构造方法的时候，发现是这样使用的:</p>
+<p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216213556959.png" alt="image-20220216213556959"></p>
+<p>builder.create调用的是</p>
+<p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216213636027.png" alt="image-20220216213636027"></p>
+<p>其中的Factory：</p>
+<p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216213700960.png" alt="image-20220216213700960"></p>
+<p>可以看到，这个interface中的函数与BlockState的构造方法基本相似（S可以认为是BlockState，O是Block）等于是在这一步将构造方法转成了一个接口？</p>
+<p>随后自己写了个测试来验证</p>
+<p>总共有两个类，一个接口</p>
+<ul>
+<li>接口IFactory<img src="image-20220216214148130.png" alt="image-20220216214148130" style="zoom: 67%;" /></li>
+<li>Test<img src="image-20220216214210018.png" alt="image-20220216214210018" style="zoom:67%;" /></li>
+<li>UsedToNew<img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216214225205.png" alt="image-20220216214225205"></li>
+</ul>
+<p>通过运行Test中的main方法，可以发现控制台输出了test</p>
+<p><img src="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/image-20220216214325711.png" alt="image-20220216214325711"></p>
+<p>emmm只能说学到了..</p>
 
     </div>
 </div>
@@ -364,19 +393,12 @@
 </script>
 <div class="Last-Next">
     
-    <a href="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/">
-        <div class="last">
-            <span>上一篇</span>
-            <p>我的世界1.18mod开发学习-源码解读记录(2)-Block</p>
-        </div>
-    </a>
-    
 
     
-    <a href="/2022/02/12/First-Blog/">
+    <a href="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/">
         <div class="next">
             <span>下一篇</span>
-            <p>First Blog</p>
+            <p>我的世界1.18mod开发学习-源码解读记录(1)-Item</p>
         </div>
     </a>
     
