@@ -302,28 +302,28 @@
 </ol>
 <h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><p>类前面带一个大写的I代表这个是一个接口，这么命名是为了方便区分</p>
 <h2 id="记录"><a href="#记录" class="headerlink" title="记录"></a>记录</h2><p>Item的依赖树</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/img.png" alt="img"></p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/img.png" alt="img"></p>
 <h3 id="IForgeRegistryEntry"><a href="#IForgeRegistryEntry" class="headerlink" title="IForgeRegistryEntry"></a>IForgeRegistryEntry</h3><p>此为接口，主要定义了三个方法：</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215210911564.png" alt="image-20220215210911564"></p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215210911564.png" alt="image-20220215210911564"></p>
 <p>主要是为了设置注册名以及获得注册名和注册类型，其使用的ResourceLocation主要作用是为了记录namespace和path，可以认为前面的是mod id，后面为你为这个方块&#x2F;物品命名的名字。两者通过:合并</p>
 <p>如我的世界中泥土这两者应为minecraft以及dirt，这一点可以通过IDEA debug认证：</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215211921176.png" alt="image-20220215211921176"></p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215211921176.png" alt="image-20220215211921176"></p>
 <p>可以看见namespace为minecraft，path为dirt，合在一起为minecraft:dirt</p>
 <p>因此，这个接口主要是提供了一个可使用的设置或获取注册名以及当前泛型也就是那个V的class，比如声音，物体等</p>
 <h3 id="ForgeRegistryEntry"><a href="#ForgeRegistryEntry" class="headerlink" title="ForgeRegistryEntry"></a>ForgeRegistryEntry</h3><p>此类也较为简单，定义了五个方法</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215212724011.png" alt="image-20220215212724011"></p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215212724011.png" alt="image-20220215212724011"></p>
 <p>主要是拓展实现了IForgeRgistryEntry的一些方法，如不再限制于ResourceLocation，加入了只用提供两个字符串即可注册，内部含有registryName用于存储ResourceLocation</p>
 <p>值得一提的是，里面的delegate应该是委托，在getRegistryName中得知如果delegate中存储的ResourceLocation不为null则返回存储值，在返回registryName之前</p>
 <h3 id="ItemLike"><a href="#ItemLike" class="headerlink" title="ItemLike"></a>ItemLike</h3><p>只定义了一个方法..效果未知</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215213928889.png" alt="image-20220215213928889"></p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215213928889.png" alt="image-20220215213928889"></p>
 <h3 id="IForgeItem"><a href="#IForgeItem" class="headerlink" title="IForgeItem"></a>IForgeItem</h3><p>重头戏，这个定义了许多的方法..不好截图，最好查看源码，这一块有注释，并且方法名有一些也一目了然</p>
 <p>也有一些方法名要注意名字，比如Piglins为猪灵..</p>
 <p>此处可以利用好IDEA的联想，在想要某个功能的时候按逗号.再选择方法</p>
 <h3 id="Item"><a href="#Item" class="headerlink" title="Item"></a>Item</h3><p>此处开始会出现奇奇怪怪的名字，如p_41394_,p_41446_等，有些需要推断了，同样的，此处的方法也比较多，有一些都是默认定义好的，比如</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215215937732.png" alt="image-20220215215937732"></p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215215937732.png" alt="image-20220215215937732"></p>
 <p>可以看到这两个方法应该是获得喝药水或者吃东西的声音</p>
 <p>构造方法较为重要，里面改变了一些数值</p>
-<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1.18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215220200600.png" alt="image-20220215220200600"></p>
+<p><img src="/2022/02/15/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95(1)/image-20220215220200600.png" alt="image-20220215220200600"></p>
 <ul>
 <li>category:创造模式的物品栏，可以为null，就不添加到创造模式物品栏</li>
 <li>rarity：罕见度，推测是地牢生成宝箱的时候用的？</li>
