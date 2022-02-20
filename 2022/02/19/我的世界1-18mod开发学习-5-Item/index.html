@@ -3,14 +3,14 @@
 
 	<head>
 		
-<title>我的世界1.18mod开发学习(1)-前言-sdww0</title>
+<title>我的世界1.18mod开发学习(5)-Item-sdww0</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" type="image/x-icon" href="/image/favicon.ico">
 
 
-<meta name="keywords" content="我的世界,mod开发,1.18,学习,前言,forge,">
+<meta name="keywords" content="我的世界,mod开发,1.18,学习,Item,forge,">
 <meta name="description" content="">
 
 
@@ -266,13 +266,13 @@
             
             <li><a href="/tags/学习">学习</a></li>
             
-            <li><a href="/tags/前言">前言</a></li>
+            <li><a href="/tags/Item">Item</a></li>
             
             <li><a href="/tags/forge">forge</a></li>
             
             
         </ul>
-        <h1>我的世界1.18mod开发学习(1)-前言</h1>
+        <h1>我的世界1.18mod开发学习(5)-Item</h1>
         <div class="article-info">
             <div class="article-author">
                 
@@ -285,25 +285,36 @@
                 </svg>
                 
                 <span> <a href="">sdww0</a></span>
-                <p>2022-02-17 21:42:12</p>
+                <p>2022-02-19 15:14:52</p>
             </div>
         </div>
     </div>
 </div>
 <div class="article-content">
     <div id="article" class="content">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
-<li><p>由于源码解读记录没有一个能跟随的流程，因此源码解读记录将会转变为阅读<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/">forge官方文档</a></p>
-</li>
-<li><p>因为是一边学习一边做记录，未来可能会修改或者添加更多的内容</p>
-</li>
-<li><p>有一些阅读时认为不太需要的不会记录，不一定会跟着官方文档</p>
-</li>
-<li><p>有时候阅读别的模组源码或许会给新的思路</p>
-</li>
-<li><p>需要有点java基础</p>
-</li>
-</ul>
+        <h2 id="Item"><a href="#Item" class="headerlink" title="Item"></a>Item</h2><p>​    这一章将会正式开始写代码，往游戏内注册第一个物品，我们将以红石锭(redstone_ingot)为例</p>
+<h3 id="创建类"><a href="#创建类" class="headerlink" title="创建类"></a>创建类</h3><p>​    在items下创建RedstoneIngot类并继承ItemBase，构造方法修改为</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">RedstoneIngot</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-built_in">super</span>(<span class="hljs-string">&quot;redstone_ingot&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Item</span>.Properties().tab(ExampleMod.creativeTab));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>​    在ModItems中新建一个RedstoneIngot</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Item</span> <span class="hljs-variable">REDSTONE_INGOT</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RedstoneIngot</span>();<br></code></pre></td></tr></table></figure>
+
+<p>​    此时进入游戏应该能看见在你的创造栏内有一个物品，名应该为item.examplemod.redstone_ingot，这是因为我们还没有添加其他的属性，比如语言，材质，模型等</p>
+<h3 id="添加语言，材质"><a href="#添加语言，材质" class="headerlink" title="添加语言，材质"></a>添加语言，材质</h3><h4 id="语言"><a href="#语言" class="headerlink" title="语言"></a>语言</h4><p>​    在assets&#x2F;examplemod&#x2F;lang下寻找en_us.json，在里面添加一句</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-attr">&quot;item.examplemod.redstone_ingot&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Redstone Ingot&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>​    注意到前面的名字是与你之前拿在手里的字符串相同，再次启动游戏就能发现物品已经有名字</p>
+<h4 id="材质"><a href="#材质" class="headerlink" title="材质"></a>材质</h4><p>​    在assets&#x2F;examplemod&#x2F;item下创建文件，名为redstone_ingot.json</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;parent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;item/generated&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;textures&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;layer0&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;examplemod:item/redstone_ingot&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>​    这个文件只是描述了模型，除此之外还需要一个材质图片，在此我找到了运算工艺<a target="_blank" rel="noopener" href="https://i.mcmod.cn/item/icon/128x128/4/43479.png">红石锭</a>的图片，下载保存在textures&#x2F;item下，命名为redstone_ingot.png，此时进入游戏就能发现手中的物品拥有了材质，如果这个物品没有特殊作用就不用在进行操作了</p>
+<h2 id="给予属性"><a href="#给予属性" class="headerlink" title="给予属性"></a>给予属性</h2><p>​    现在你的物品什么也不能做，所以接下来把他变成可以食用的红石锭吧！通过修改RedstoneIngot的构造方法为</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">RedstoneIngot</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-built_in">super</span>(<span class="hljs-string">&quot;redstone_ingot&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Item</span>.Properties().tab(ExampleMod.creativeTab)<br>          .food(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FoodProperties</span>.Builder().alwaysEat().fast()<br>                .effect(<span class="hljs-keyword">new</span> <span class="hljs-title class_">MobEffectInstance</span>(MobEffects.MOVEMENT_SPEED,<br>                                              <span class="hljs-number">1200</span>,<span class="hljs-number">3</span>),<span class="hljs-number">1</span>).nutrition(<span class="hljs-number">10</span>).saturationMod(<span class="hljs-number">20.0f</span>).build()));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>​    即可将你的红石锭变为可食用的，不仅随时随地能吃，吃的飞快，还给予了速度4的效果！这些是通过修改Item.Properties实现的，如果想要实现更多功能，可以修改其他的属性，或者覆写函数：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> InteractionResultHolder&lt;ItemStack&gt; <span class="hljs-title function_">use</span><span class="hljs-params">(Level level, Player player, InteractionHand hand)</span> &#123;<br>    player.giveExperiencePoints(<span class="hljs-number">100</span>);<br>    player.getMainHandItem().setCount(player.getMainHandItem().getCount()-<span class="hljs-number">1</span>);<br>    <span class="hljs-keyword">return</span> InteractionResultHolder.consume(player.getMainHandItem());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>添加此段到RedstoneIngot类中，运行游戏就右击红石锭就可以发现使用后会增加经验</p>
 
     </div>
 </div>
@@ -333,19 +344,19 @@
 </script>
 <div class="Last-Next">
     
-    <a href="/2022/02/17/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-2-%E6%A6%82%E5%BF%B5/">
+    <a href="/2022/02/20/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-6-Block/">
         <div class="last">
             <span>上一篇</span>
-            <p>我的世界1.18mod开发学习(2)-概念</p>
+            <p>我的世界1.18mod开发学习(6)-Block</p>
         </div>
     </a>
     
 
     
-    <a href="/2022/02/16/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E8%AE%B0%E5%BD%95-2-Block/">
+    <a href="/2022/02/18/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-4-%E6%A6%82%E5%BF%B5/">
         <div class="next">
             <span>下一篇</span>
-            <p>我的世界1.18mod开发学习-源码解读记录(2)-Block(废弃)</p>
+            <p>我的世界1.18mod开发学习(4)-概念</p>
         </div>
     </a>
     

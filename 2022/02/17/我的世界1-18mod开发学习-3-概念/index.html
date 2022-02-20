@@ -3,7 +3,7 @@
 
 	<head>
 		
-<title>我的世界1.18mod开发学习(2)-概念-sdww0</title>
+<title>我的世界1.18mod开发学习(3)-概念-sdww0</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -282,7 +282,7 @@
             
             
         </ul>
-        <h1>我的世界1.18mod开发学习(2)-概念</h1>
+        <h1>我的世界1.18mod开发学习(3)-概念</h1>
         <div class="article-info">
             <div class="article-author">
                 
@@ -295,7 +295,7 @@
                 </svg>
                 
                 <span> <a href="">sdww0</a></span>
-                <p>2022-02-17 21:55:50</p>
+                <p>2022-02-17 19:56:04</p>
             </div>
         </div>
     </div>
@@ -331,7 +331,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">final</span> String namespace;<br><span class="hljs-keyword">protected</span> <span class="hljs-keyword">final</span> String path;<br><br><span class="hljs-keyword">protected</span> <span class="hljs-title function_">ResourceLocation</span><span class="hljs-params">(String[] p_135814_)</span> &#123;<br>   <span class="hljs-built_in">this</span>.namespace = StringUtils.isEmpty(p_135814_[<span class="hljs-number">0</span>]) ? <span class="hljs-string">&quot;minecraft&quot;</span> : p_135814_[<span class="hljs-number">0</span>];<br>   <span class="hljs-built_in">this</span>.path = p_135814_[<span class="hljs-number">1</span>];<br>   <span class="hljs-keyword">if</span> (!isValidNamespace(<span class="hljs-built_in">this</span>.namespace)) &#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ResourceLocationException</span>(<span class="hljs-string">&quot;Non [a-z0-9_.-] character in namespace of location: &quot;</span> + <span class="hljs-built_in">this</span>.namespace + <span class="hljs-string">&quot;:&quot;</span> + <span class="hljs-built_in">this</span>.path);<br>   &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!isValidPath(<span class="hljs-built_in">this</span>.path)) &#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ResourceLocationException</span>(<span class="hljs-string">&quot;Non [a-z0-9/._-] character in path of location: &quot;</span> + <span class="hljs-built_in">this</span>.namespace + <span class="hljs-string">&quot;:&quot;</span> + <span class="hljs-built_in">this</span>.path);<br>   &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">ResourceLocation</span><span class="hljs-params">(String p_135809_)</span> &#123;<br>   <span class="hljs-built_in">this</span>(decompose(p_135809_, <span class="hljs-string">&#x27;:&#x27;</span>));<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">ResourceLocation</span><span class="hljs-params">(String p_135811_, String p_135812_)</span> &#123;<br>   <span class="hljs-built_in">this</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[]&#123;p_135811_, p_135812_&#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>​    截取了一部分源码，其中有namespace和path，可以认为前面的是命名空间，为mod id，后面为你为这个方块&#x2F;物品命名的名字。两者通过:合并，如我的世界中泥土这两者应为minecraft以及dirt，这一点可以通过IDEA debug认证：</p>
-<p><img src="/2022/02/17/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-2-%E6%A6%82%E5%BF%B5/image-20220215211921176.png" alt="image-20220215211921176"></p>
+<p><img src="/image-20220215211921176.png" alt="image-20220215211921176"></p>
 <p>​    可以看见namespace为minecraft，path为dirt，合在一起为minecraft:dirt</p>
 <h4 id="在哪"><a href="#在哪" class="headerlink" title="在哪"></a>在哪</h4><p>​    通常需要将材质放置在assets&#x2F;“namespace”&#x2F;“ctx”&#x2F;“path”下，namespace和path为ResourceLocation里对应的字符串，ctx为一个特定的路径，放一张截图作为参考:</p>
 <img src="image-20220217231624620.png" alt="image-20220217231624620" style="zoom:30%;" />
@@ -393,19 +393,19 @@
 </script>
 <div class="Last-Next">
     
-    <a href="/2022/02/18/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-3-%E6%A6%82%E5%BF%B5/">
+    <a href="/2022/02/18/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-4-%E6%A6%82%E5%BF%B5/">
         <div class="last">
             <span>上一篇</span>
-            <p>我的世界1.18mod开发学习(3)-概念</p>
+            <p>我的世界1.18mod开发学习(4)-概念</p>
         </div>
     </a>
     
 
     
-    <a href="/2022/02/17/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-1-%E5%89%8D%E8%A8%80/">
+    <a href="/2022/02/17/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-2-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
         <div class="next">
             <span>下一篇</span>
-            <p>我的世界1.18mod开发学习(1)-前言</p>
+            <p>我的世界1.18mod开发学习(2)-环境搭建</p>
         </div>
     </a>
     
