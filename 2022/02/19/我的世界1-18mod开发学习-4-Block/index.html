@@ -296,23 +296,22 @@
 </div>
 <div class="article-content">
     <div id="article" class="content">
-        <h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><p>毫无疑问，方块是我的世界最重要的一部分，在这一篇将介绍如何新建一个方块，注册，然后解决材质未加载问题</p>
-<h3 id="新建一个方块"><a href="#新建一个方块" class="headerlink" title="新建一个方块"></a>新建一个方块</h3><p>首先来看Block的构造方法:</p>
+        <h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><p>​    方块是我的世界最重要的一部分，在这一篇将介绍如何新建一个方块，注册，然后是材质加载</p>
+<h3 id="新建一个方块"><a href="#新建一个方块" class="headerlink" title="新建一个方块"></a>新建一个方块</h3><p>​    首先来看Block的构造方法:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">Block</span><span class="hljs-params">(BlockBehaviour.Properties p_49795_)</span> &#123;<br>    <span class="hljs-built_in">super</span>(p_49795_);<br>    StateDefinition.Builder&lt;Block, BlockState&gt; builder = <span class="hljs-keyword">new</span> <span class="hljs-title class_">StateDefinition</span>.Builder&lt;&gt;(<span class="hljs-built_in">this</span>);<br>    <span class="hljs-built_in">this</span>.createBlockStateDefinition(builder);<br>    <span class="hljs-built_in">this</span>.stateDefinition = builder.create(Block::defaultBlockState, BlockState::<span class="hljs-keyword">new</span>);<br>    <span class="hljs-built_in">this</span>.registerDefaultState(<span class="hljs-built_in">this</span>.stateDefinition.any());<br>    <span class="hljs-keyword">if</span> (SharedConstants.IS_RUNNING_IN_IDE) &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getClass().getSimpleName();<br>        <span class="hljs-keyword">if</span> (!s.endsWith(<span class="hljs-string">&quot;Block&quot;</span>)) &#123;<br>            LOGGER.error(<span class="hljs-string">&quot;Block classes should end with Block and &#123;&#125; doesn&#x27;t.&quot;</span>, (Object)s);<br>        &#125;<br>    &#125;<br>    initClient();<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>可以看到，如果需要新建一个Block，需要传入一个BlockBehaviour.Properties，Properties内含方块的一些属性，比如是否能碰撞，爆炸抗性，破坏时间等，这里只介绍最简单的创建方法，其他的均为默认，具体新建方块为</p>
+<p>​    可以看到，如果需要新建一个Block，需要传入一个BlockBehaviour.Properties，Properties内含方块的一些属性，比如是否能碰撞，爆炸抗性，破坏时间等，这里只介绍最简单的创建方法，其他的均为默认，具体新建方块为</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Block</span> <span class="hljs-variable">FIRST_BLOCK</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Block</span>(BlockBehaviour.Properties.of(Material.DIRT));<br></code></pre></td></tr></table></figure>
 
-<p>这样就创建好了一种你的方块，但最好使用继承Block的方法新建一个方块，每个方块都写成一个类，接着还需要对FIRST_BLOCK设置registryName，具体方法为setRegistryName(xxx)，在此处path设置为first_block，modid为examplemod</p>
-<h3 id="注册到游戏内"><a href="#注册到游戏内" class="headerlink" title="注册到游戏内"></a>注册到游戏内</h3><p>创建了一个方块，接着需要注册到游戏内，这样才能让游戏知道有该方块，具体是订阅 RegistryEvent.Register&lt;Block&gt; 事件，在event中注册你的方块。</p>
-<p>与Item不同，Item注册完后应该可以直接看到，但Block除了注册自身，还需要注册一个叫做BlockItem</p>
-<p>在我的世界中，放置在世界里的叫做Block，在物品栏或者其他存储内的应为Item，为了让Block和Item有联系，存在一个类叫做BlockItem，这个类继承了Item，并且内含一个block用于存储自己所属的Block，BlockItem实现方块放置等方法。</p>
-<p>新建一个Block时，默认不包含一个BlockItem，因此除了注册Block，还需注册BlockItem</p>
+<p>​    这样就创建好了一种你的方块，但最好使用继承Block的方法新建一个方块，每个方块都写成一个类，接着还需要对FIRST_BLOCK设置registryName，具体方法为setRegistryName(xxx)，在此处path设置为first_block，modid为examplemod</p>
+<h3 id="注册到游戏内"><a href="#注册到游戏内" class="headerlink" title="注册到游戏内"></a>注册到游戏内</h3><p>​    创建了一个方块，接着需要注册到游戏内，这样才能让游戏知道有该方块，具体是订阅 RegistryEvent.Register&lt;Block&gt; 事件，在event中注册你的方块。</p>
+<p>​    与Item不同，Item注册完后应该可以直接看到，但Block除了注册自身，还需要注册一个叫做BlockItem</p>
+<p>​    在我的世界中，放置在世界里的叫做Block，在物品栏或者其他存储内的应为Item，为了让Block和Item有联系，存在一个类叫做BlockItem，这个类继承了Item，并且内含一个block用于存储自己所属的Block，BlockItem实现方块放置等方法。</p>
+<p>​    新建一个Block时，默认不包含一个BlockItem，因此除了注册Block，还需注册BlockItem</p>
 <h4 id="创建BlockItem"><a href="#创建BlockItem" class="headerlink" title="创建BlockItem"></a>创建BlockItem</h4><p>构造方法</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">BlockItem</span><span class="hljs-params">(Block p_40565_, Item.Properties p_40566_)</span> &#123;<br>    <span class="hljs-built_in">super</span>(p_40566_);<br>    <span class="hljs-built_in">this</span>.block = p_40565_;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>其中super代表Item</p>
-<p>在这里可以发现，需要传入Block，以及Item.Properties来创建一个BlockItem，因此对于examplemod:first_block，我们新建BlockItem这样写:</p>
+<p>​    其中super代表Item，在这里可以发现，需要传入Block，以及Item.Properties来创建一个BlockItem，因此对于examplemod:first_block，我们新建BlockItem这样写:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">BlockItem</span> <span class="hljs-variable">FIRST_BLOCK_ITEM</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BlockItem</span>(FIRST_BLOCK,<span class="hljs-keyword">new</span> <span class="hljs-title class_">Item</span>.Properties().tab(你的CreativeModeTab或CreativeModeTab.TAB_BUILDING_BLOCKS));<br></code></pre></td></tr></table></figure>
 
 <p><strong>注意要设置registryName，在这里同样设置为examplemod:first_block</strong></p>
@@ -320,58 +319,54 @@
 <p>最简单的CreativeModeTab创建方法:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">CreativeModeTab</span> <span class="hljs-variable">creativeModeTab</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CreativeModeTab</span>(模组id) &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> ItemStack <span class="hljs-title function_">makeIcon</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ItemStack</span>(Items.DIAMOND);<br>    &#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
 
-<h4 id="注册到游戏内-1"><a href="#注册到游戏内-1" class="headerlink" title="注册到游戏内"></a>注册到游戏内</h4><p>同样，BlockItem需要注册到游戏内，通过订阅事件RegistryEvent.Register&lt;Item&gt; 将其注册到游戏内</p>
-<h3 id="材质及语言"><a href="#材质及语言" class="headerlink" title="材质及语言"></a>材质及语言</h3><p>进入游戏后大概率会发现这个物体没有名字，只有一长串的字符，并且无论是拿在手里的还是实际放出的都是紫黑块，那是因为还没有定义他的名字以及材质</p>
-<h4 id="语言"><a href="#语言" class="headerlink" title="语言"></a>语言</h4><p>在src&#x2F;main&#x2F;resources&#x2F;assets&#x2F;examplemod&#x2F;lang下新建一个en_us.json,在里面输入</p>
+<h4 id="注册到游戏内-1"><a href="#注册到游戏内-1" class="headerlink" title="注册到游戏内"></a>注册到游戏内</h4><p>​    同样，BlockItem需要注册到游戏内，通过订阅事件RegistryEvent.Register&lt;Item&gt; 将其注册到游戏内</p>
+<h3 id="材质及语言"><a href="#材质及语言" class="headerlink" title="材质及语言"></a>材质及语言</h3><p>​    进入游戏后大概率会发现这个物体没有名字，只有一长串的字符，并且无论是拿在手里的还是实际放出的都是紫黑块，那是因为还没有定义他的名字以及材质</p>
+<h4 id="语言"><a href="#语言" class="headerlink" title="语言"></a>语言</h4><p>​    在src&#x2F;main&#x2F;resources&#x2F;assets&#x2F;examplemod&#x2F;lang下新建一个en_us.json,在里面输入</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;block.examplemod.first_block&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;First Block&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 
-<p>或者去掉{}直接加入里面的字符串，接着登录游戏应该就能看到他的名字变成了First Block，具体原因在前面的文章已写</p>
-<h4 id="材质"><a href="#材质" class="headerlink" title="材质"></a>材质</h4><p>首先，需要确保你存在路径src&#x2F;main&#x2F;resources&#x2F;assets&#x2F;examplemod&#x2F;</p>
+<p>​    或者去掉{}直接加入里面的字符串，接着登录游戏应该就能看到他的名字变成了First Block，具体原因在前面的文章已写</p>
+<h4 id="材质"><a href="#材质" class="headerlink" title="材质"></a>材质</h4><p>​    首先，需要确保你存在路径src&#x2F;main&#x2F;resources&#x2F;assets&#x2F;examplemod&#x2F;</p>
 <ul>
 <li>blockstates</li>
 <li>models&#x2F;block</li>
 <li>models&#x2F;item</li>
 <li>textures&#x2F;block</li>
 </ul>
-<p>如果不存在，请创建，并且需要准备一张16*16 png格式的像素图，保存在textures&#x2F;block下，这里提供了<a target="_blank" rel="noopener" href="https://i.postimg.cc/6ptqbrS2/teach.png">一张</a></p>
-<p>用Aseprite随便画的，命名为first_block.png</p>
-<p>接着在models&#x2F;block中创建文件first_block.json</p>
+<p>​    如果不存在，请创建，并且需要准备一张16*16 png格式的像素图，保存在textures&#x2F;block下，这里提供了<a target="_blank" rel="noopener" href="https://i.postimg.cc/6ptqbrS2/teach.png">一张</a></p>
+<p>​    用Aseprite随便画的，命名为first_block.png</p>
+<p>​    接着在models&#x2F;block中创建文件first_block.json</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>	<span class="hljs-attr">&quot;parent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;block/cube_all&quot;</span><span class="hljs-punctuation">,</span><br>	<span class="hljs-attr">&quot;textures&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>		<span class="hljs-attr">&quot;all&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;examplemod:block/first_block&quot;</span><br>	<span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 
-<p>在models&#x2F;item下创建文件fisrt_block.json</p>
+<p>​    在models&#x2F;item下创建文件fisrt_block.json</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>	<span class="hljs-attr">&quot;parent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;examplemod:block/first_block&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 
-<p>进入游戏，会发现手上的方块已经有材质了，但是放下来后依旧是紫黑块，接下来创建的文件会解决这个问题</p>
-<p>在blockstates下创建文件first_block.json</p>
+<p>​    进入游戏，会发现手上的方块已经有材质了，但是放下来后依旧是紫黑块，接下来创建的文件会解决这个问题</p>
+<p>​    在blockstates下创建文件first_block.json</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;variants&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;model&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;examplemod:block/first_block&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 
-<p>再次进入游戏，应该就能发现紫黑块有材质了（虽然有点丑）</p>
-<h3 id="BlockBench"><a href="#BlockBench" class="headerlink" title="BlockBench"></a>BlockBench</h3><p>推荐一个用来建立我的世界方块的工具，BlockBench,这个工具会根据你创建的模型自动生成你需要的json文件，这里暂时不补充，有兴趣的可以去试试</p>
-<h2 id="BlockState"><a href="#BlockState" class="headerlink" title="BlockState"></a>BlockState</h2><p>我的世界1.7及以前的版本中，需要存储状态的块使用的是metadata(元数据，来自翻译），其是与块一起存储的额外数字，可以通过定义metadata来进行一些其他的操作</p>
-<p>但是metadata不看源码或没注释的话是纯粹的魔法数字，没人看得懂，因此从1.8开始，BlockState取代了之前的metadata</p>
-<p>在forge文档中举了个例子，朝东，并且激活状态的石头按钮的存储</p>
-<p>原本为</p>
-<p>“minecraft:stone_button”，元数据为9</p>
-<p>现在为</p>
-<p>“minecraft:stone_button[facing&#x3D;east,powered&#x3D;true]”</p>
-<p>如果不看源码的情况下，第二种更为实用</p>
-<p>对于BlockState，每一种状态组合在游戏创建初期就已经确认，不可变，因此可以用(&#x3D;&#x3D;)来检查两个状态是否相等</p>
-<h3 id="如何创建一种状态属性"><a href="#如何创建一种状态属性" class="headerlink" title="如何创建一种状态属性"></a>如何创建一种状态属性</h3><p>官方已经给好了四种基本状态，为</p>
+<p>​    再次进入游戏，应该就能发现紫黑块有材质了（虽然有点丑）</p>
+<h3 id="BlockBench"><a href="#BlockBench" class="headerlink" title="BlockBench"></a>BlockBench</h3><p>​    推荐一个用来建立我的世界方块的工具，BlockBench,这个工具会根据你创建的模型自动生成你需要的json文件，这里暂时不补充，有兴趣的可以去试试</p>
+<h2 id="BlockState"><a href="#BlockState" class="headerlink" title="BlockState"></a>BlockState</h2><p>​    我的世界1.7及以前的版本中，需要存储状态的块使用的是metadata(元数据，来自翻译），其是与块一起存储的额外数字，可以通过定义metadata来进行一些其他的操作</p>
+<p>​    但是metadata不看源码或没注释的话是纯粹的魔法数字，没人看得懂，因此从1.8开始，BlockState取代了之前的metadata，在forge文档中举了个例子，朝东，并且激活状态的石头按钮的存储</p>
+<p>​    原本为”minecraft:stone_button”，元数据为9</p>
+<p>​    现在为”minecraft:stone_button[facing&#x3D;east,powered&#x3D;true]”</p>
+<p>​    第二种更为实用，对于BlockState，每一种状态组合在游戏创建初期就已经确认，不可变，因此可以用(&#x3D;&#x3D;)来检查两个状态是否相等</p>
+<h3 id="如何创建一种状态属性"><a href="#如何创建一种状态属性" class="headerlink" title="如何创建一种状态属性"></a>如何创建一种状态属性</h3><p>​    官方已经给好了四种基本状态，为</p>
 <ul>
 <li>IntegerProperty </li>
 <li>DirectionProperty</li>
 <li>EnumProperty</li>
 <li>BooleanProperty</li>
 </ul>
-<p>分别是整数属性，方向属性，Enum属性，布尔属性，需要创建这些类型的可以直接new，对于他们各自的构造方法在此不细究，<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/blocks/states/#implementing-block-states">官方文档</a>给的较为详细</p>
-<p>如果需要创建自己的状态，需要继承Property&lt;?&gt;类，在这里面实现一些方法，具体实现可以参考源码的实现完成的属性</p>
-<h3 id="注册到Block中"><a href="#注册到Block中" class="headerlink" title="注册到Block中"></a>注册到Block中</h3><p>当确定需要一个状态时，需要覆写createBlockStateDefinition(StateDefinition.Builder)来加入，通过调用registerDefaultState来改变默认状态，在这里同样使用之前的first_block，但是改为了一个类，在这里给出覆写以及更改默认状态后的代码</p>
+<p>​    分别是整数属性，方向属性，Enum属性，布尔属性，需要创建这些类型的可以直接new，对于他们各自的构造方法在此不细究，<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/blocks/states/#implementing-block-states">官方文档</a>给的较为详细</p>
+<p>​    如果需要创建自己的状态，需要继承Property&lt;?&gt;类，在这里面实现一些方法，具体实现可以参考源码的实现完成的属性</p>
+<h3 id="注册到Block中"><a href="#注册到Block中" class="headerlink" title="注册到Block中"></a>注册到Block中</h3><p>​    当确定需要一个状态时，需要覆写createBlockStateDefinition(StateDefinition.Builder)来加入，通过调用registerDefaultState来改变默认状态，在这里同样使用之前的first_block，但是改为了一个类，在这里给出覆写以及更改默认状态后的代码</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FirstBlock</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Block</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">BooleanProperty</span> <span class="hljs-variable">BOOLEAN_PROPERTY</span> <span class="hljs-operator">=</span> BooleanProperty.create(<span class="hljs-string">&quot;example_boolean&quot;</span>);;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">FirstBlock</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">super</span>(BlockBehaviour.Properties.of(Material.DIRT));<br>        setRegistryName(Reference.MOD_ID,<span class="hljs-string">&quot;first_block&quot;</span>);<br>        ModBlocks.BLOCKS.add(<span class="hljs-built_in">this</span>);<br>        Item.<span class="hljs-type">Properties</span> <span class="hljs-variable">properties</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Item</span>.Properties().tab(Main.creativeTab);<br>        ModBlocks.BLOCK_ITEMS.add((BlockItem)<span class="hljs-keyword">new</span> <span class="hljs-title class_">BlockItem</span>(<span class="hljs-built_in">this</span>,properties).setRegistryName(<span class="hljs-built_in">this</span>.getRegistryName()));<br>        <span class="hljs-built_in">this</span>.registerDefaultState(<br>                <span class="hljs-built_in">this</span>.stateDefinition.any()<br>                        .setValue(BOOLEAN_PROPERTY, <span class="hljs-literal">false</span>)<br>        );<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">createBlockStateDefinition</span><span class="hljs-params">(StateDefinition.Builder&lt;Block, BlockState&gt; stateBuilder)</span> &#123;<br>        stateBuilder.add(BOOLEAN_PROPERTY);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>如果需要覆盖放置块时的BlockState，可以通过覆写getStateForPlacement方法，默认为方块的默认状态，在此就不修改了</p>
+<p>​    如果需要覆盖放置块时的BlockState，可以通过覆写getStateForPlacement方法，默认为方块的默认状态，在此就不修改了</p>
 <h3 id="与blockstates中的json文件交互"><a href="#与blockstates中的json文件交互" class="headerlink" title="与blockstates中的json文件交互"></a>与blockstates中的json文件交互</h3><p>待补</p>
-<h2 id="交互"><a href="#交互" class="headerlink" title="交互"></a>交互</h2><p>源码中的Block继承了BlockBehaviour，在里面有很多的交互方法以及获取一些值，forge文档中给出了不少例子可以作为<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/blocks/interaction/#block-interaction">参考</a></p>
-<p>在此处只打出这些方法名，可以通过网页搜索看看有没有需要的，日后可能会拓展其中一些</p>
+<h2 id="交互"><a href="#交互" class="headerlink" title="交互"></a>交互</h2><p>​    源码中的Block继承了BlockBehaviour，在里面有很多的交互方法以及获取一些值，forge文档中给出了不少例子可以作为<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/blocks/interaction/#block-interaction">参考</a></p>
+<p>​    在此处只打出这些方法名，可以通过网页搜索看看有没有需要的，日后可能会拓展其中一些</p>
 <ul>
 <li>attack</li>
 <li>canBeReplaced</li>

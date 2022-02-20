@@ -302,75 +302,66 @@
 </div>
 <div class="article-content">
     <div id="article" class="content">
-        <h2 id="服务端-x2F-客户端"><a href="#服务端-x2F-客户端" class="headerlink" title="服务端&#x2F;客户端"></a>服务端&#x2F;客户端</h2><p>首先，要了解服务端和客户端这两者代表着什么</p>
+        <h2 id="服务端-x2F-客户端"><a href="#服务端-x2F-客户端" class="headerlink" title="服务端&#x2F;客户端"></a>服务端&#x2F;客户端</h2><p>​    首先，要了解服务端和客户端这两者代表着什么</p>
 <ul>
 <li>客户端就是你正在玩的那个游戏，有丰富的图形，你的键盘鼠标的移动能带来游戏界面的变化。</li>
 <li>服务端是用来连接多人游戏的地方，如果连接过我的世界服务器就应该能知道，游玩前需要输入一串数字或英文字母来连接到一个服务器，服务端就是运行在服务器（同样是一台电脑，但是与普通电脑会有点区别）上的一个程序，服务端一般没有丰富的图形界面，只有通过命令的形式交互</li>
 <li>多人游戏就是多个客户端连接到一个服务端</li>
 <li>顺带一提，就算是单人游戏也创建了一个服务端</li>
 </ul>
-<h3 id="种类"><a href="#种类" class="headerlink" title="种类"></a>种类</h3><p>在forge官方文档中再将服务端和客户端进行了划分，分为</p>
+<h3 id="种类"><a href="#种类" class="headerlink" title="种类"></a>种类</h3><p>​    在forge官方文档中再将服务端和客户端进行了划分，分为</p>
 <ul>
 <li>物理客户端：客户端进程，也就是你打开客户端exe后那整个程序</li>
 <li>物理服务端：服务端进程，与物理客户端类似，但没有一个丰富的图形界面来游玩（搭建过的应该都知道）</li>
 <li>逻辑服务端：用于控制天气，生物生成，生物的ai等等，在单人游戏里，一个物理客户端可以包含一个逻辑服务端以及一个逻辑客户端</li>
 <li>逻辑客户端：接受玩家的输入，如键盘鼠标等，并反馈给逻辑服务端以及渲染，同时也接受逻辑服务端的内容进行渲染，有时候玩多人服务器被卡回去就是这个道理，客户端先接受了你的命令跑到一边，但服务端还没反应过来，等服务端反应过来了你就被拉到原来的地方了</li>
 </ul>
-<h3 id="不同的端需要进行不同的操作"><a href="#不同的端需要进行不同的操作" class="headerlink" title="不同的端需要进行不同的操作"></a>不同的端需要进行不同的操作</h3><p>在Level这个类下，有一个布尔类型的值isClientSide，通过这个布尔值可以判断当前是逻辑客户端(true)还是逻辑服务端(false)</p>
-<p>对于逻辑服务端和逻辑客户端需要进行不同的操作，我的理解是，如果需要对玩家或者世界数据等进行修改，确保不在逻辑客户端。比如破坏方块对世界进行了修改，则需要确保不在逻辑客户端中运行了破坏逻辑</p>
-<h4 id="分开调用"><a href="#分开调用" class="headerlink" title="分开调用"></a>分开调用</h4><p>物理客户端不能调用 net.minecraft.server.dedicated 下的类，物理服务端不能调用 net.minecraft.client 下的类，否则会导致崩溃</p>
-<p>Dist用于区分是物理客户端还是物理服务端</p>
+<h3 id="不同的端需要进行不同的操作"><a href="#不同的端需要进行不同的操作" class="headerlink" title="不同的端需要进行不同的操作"></a>不同的端需要进行不同的操作</h3><p>​    在Level这个类下，有一个布尔类型的值isClientSide，通过这个布尔值可以判断当前是逻辑客户端(true)还是逻辑服务端(false)</p>
+<p>​    对于逻辑服务端和逻辑客户端需要进行不同的操作，我的理解是，如果需要对玩家或者世界数据等进行修改，确保不在逻辑客户端。比如破坏方块对世界进行了修改，则需要确保不在逻辑客户端中运行了破坏逻辑</p>
+<h4 id="分开调用"><a href="#分开调用" class="headerlink" title="分开调用"></a>分开调用</h4><p>​    物理客户端不能调用 net.minecraft.server.dedicated 下的类，物理服务端不能调用 net.minecraft.client 下的类，否则会导致崩溃，Dist用于区分是物理客户端还是物理服务端</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Dist</span> &#123;<br><br>    CLIENT,<br>    DEDICATED_SERVER;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isDedicatedServer</span><span class="hljs-params">()</span><br>    &#123;<br>        <span class="hljs-keyword">return</span> !isClient();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isClient</span><span class="hljs-params">()</span><br>    &#123;<br>        <span class="hljs-type">return</span> <span class="hljs-variable">this</span> <span class="hljs-operator">=</span>= CLIENT;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>如何使用会在后面说</p>
 <p><strong>单人游戏中逻辑服务端和逻辑客户端都会使用Dist.CLIENT</strong></p>
-<h4 id="单面模组（不需要双方都有）"><a href="#单面模组（不需要双方都有）" class="headerlink" title="单面模组（不需要双方都有）"></a>单面模组（不需要双方都有）</h4><p>有些例子如失落的城市，只是世界生成，并没有新的方块等，所以可以直接放到逻辑服务端，通过添加以下代码（官方给的）</p>
+<h4 id="单面模组（不需要双方都有）"><a href="#单面模组（不需要双方都有）" class="headerlink" title="单面模组（不需要双方都有）"></a>单面模组（不需要双方都有）</h4><p>​    有些例子如失落的城市，只是世界生成，并没有新的方块等，所以可以直接放到逻辑服务端，通过添加以下代码（官方给的）</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">IExtensionPoint</span>.DisplayTest(() -&gt; NetworkConstants.IGNORESERVERONLY, (a, b) -&gt; <span class="hljs-literal">true</span>));<br></code></pre></td></tr></table></figure>
 
-<p>服务端和客户端的区分蛮多的..我还是在使用的过程中慢慢的<del>找bug</del>体验吧</p>
-<h2 id="资源"><a href="#资源" class="headerlink" title="资源"></a>资源</h2><p>分为两个，一个是用于视觉的，放在逻辑客户端上，称为assets，一个是用于玩法的，放在逻辑服务端上，称为data</p>
-<p>assets由资源包控制，data由客户端控制</p>
-<p>默认的mod开发中，assets和data在src&#x2F;main&#x2F;resources下</p>
-<p>确保你的assets和data路径下都是蛇形命名，单词间以_分割，比如iron_ingot代表铁锭</p>
-<h4 id="ResourceLocation"><a href="#ResourceLocation" class="headerlink" title="ResourceLocation"></a>ResourceLocation</h4><p>这个为一个类，具体在前面的文章介绍过，现在直接复制过来：</p>
+<p>​    服务端和客户端的区分蛮多的..我还是在使用的过程中慢慢的<del>找bug</del>体验吧</p>
+<h2 id="资源"><a href="#资源" class="headerlink" title="资源"></a>资源</h2><p>​    分为两个，一个是用于视觉的，放在逻辑客户端上，称为assets，一个是用于玩法的，放在逻辑服务端上，称为data，assets由资源包控制，data由客户端控制，默认情况下，assets和data在src&#x2F;main&#x2F;resources下，需要确保你的assets和data路径下都是蛇形命名，单词间以_分割，比如iron_ingot代表铁锭</p>
+<h4 id="ResourceLocation"><a href="#ResourceLocation" class="headerlink" title="ResourceLocation"></a>ResourceLocation</h4><p>​    这个为类，具体在前面的文章介绍过，现在直接复制过来：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">final</span> String namespace;<br><span class="hljs-keyword">protected</span> <span class="hljs-keyword">final</span> String path;<br><br><span class="hljs-keyword">protected</span> <span class="hljs-title function_">ResourceLocation</span><span class="hljs-params">(String[] p_135814_)</span> &#123;<br>   <span class="hljs-built_in">this</span>.namespace = StringUtils.isEmpty(p_135814_[<span class="hljs-number">0</span>]) ? <span class="hljs-string">&quot;minecraft&quot;</span> : p_135814_[<span class="hljs-number">0</span>];<br>   <span class="hljs-built_in">this</span>.path = p_135814_[<span class="hljs-number">1</span>];<br>   <span class="hljs-keyword">if</span> (!isValidNamespace(<span class="hljs-built_in">this</span>.namespace)) &#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ResourceLocationException</span>(<span class="hljs-string">&quot;Non [a-z0-9_.-] character in namespace of location: &quot;</span> + <span class="hljs-built_in">this</span>.namespace + <span class="hljs-string">&quot;:&quot;</span> + <span class="hljs-built_in">this</span>.path);<br>   &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!isValidPath(<span class="hljs-built_in">this</span>.path)) &#123;<br>      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ResourceLocationException</span>(<span class="hljs-string">&quot;Non [a-z0-9/._-] character in path of location: &quot;</span> + <span class="hljs-built_in">this</span>.namespace + <span class="hljs-string">&quot;:&quot;</span> + <span class="hljs-built_in">this</span>.path);<br>   &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">ResourceLocation</span><span class="hljs-params">(String p_135809_)</span> &#123;<br>   <span class="hljs-built_in">this</span>(decompose(p_135809_, <span class="hljs-string">&#x27;:&#x27;</span>));<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">ResourceLocation</span><span class="hljs-params">(String p_135811_, String p_135812_)</span> &#123;<br>   <span class="hljs-built_in">this</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>[]&#123;p_135811_, p_135812_&#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>截取了一部分源码，其中有namespace和path，可以认为前面的是命名空间，为mod id，后面为你为这个方块&#x2F;物品命名的名字。两者通过:合并</p>
-<p>如我的世界中泥土这两者应为minecraft以及dirt，这一点可以通过IDEA debug认证：</p>
+<p>​    截取了一部分源码，其中有namespace和path，可以认为前面的是命名空间，为mod id，后面为你为这个方块&#x2F;物品命名的名字。两者通过:合并，如我的世界中泥土这两者应为minecraft以及dirt，这一点可以通过IDEA debug认证：</p>
 <p><img src="/2022/02/17/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-2-%E6%A6%82%E5%BF%B5/image-20220215211921176.png" alt="image-20220215211921176"></p>
-<p>可以看见namespace为minecraft，path为dirt，合在一起为minecraft:dirt</p>
-<h4 id="在哪"><a href="#在哪" class="headerlink" title="在哪"></a>在哪</h4><p>通常需要将材质放置在assets&#x2F;“namespace”&#x2F;“ctx”&#x2F;“path”下，namespace和path为ResourceLocation里对应的字符串，ctx为一个特定的路径，放一张截图作为参考:</p>
+<p>​    可以看见namespace为minecraft，path为dirt，合在一起为minecraft:dirt</p>
+<h4 id="在哪"><a href="#在哪" class="headerlink" title="在哪"></a>在哪</h4><p>​    通常需要将材质放置在assets&#x2F;“namespace”&#x2F;“ctx”&#x2F;“path”下，namespace和path为ResourceLocation里对应的字符串，ctx为一个特定的路径，放一张截图作为参考:</p>
 <img src="image-20220217231624620.png" alt="image-20220217231624620" style="zoom:30%;" />
 
-<p>父目录为namespace，截图来自吸血鬼模组的assets</p>
-<p>如果你现在要添加一个物品叫做铁匕首（iron_dagger），命名空间为mod id叫做 examplemod，则models下的item需要放置一个json文件作为描述这个材质内容，接着在textures下的item放置你的具体材质图片，如json文件为</p>
+<p>​    父目录为namespace，截图来自吸血鬼模组的assets，如果你现在要添加一个物品叫做铁匕首（iron_dagger），命名空间为mod id叫做 examplemod，则models下的item需要放置一个json文件作为描述这个材质内容，接着在textures下的item放置你的具体材质图片，如json文件为</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;parent&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;item/generated&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;textures&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;layer0&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;examplemod:item/iron_dagger&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 
-<p>则需要在textures下创建一个item文件夹（此处的文件夹名与上方json里的layer0那一行的item相同），里面放置你的材质图片并命名为iron_dagger.png</p>
-<p>此处只举例了item，其他的还需要自行搜索，block和item有些许不同</p>
-<h2 id="数据包"><a href="#数据包" class="headerlink" title="数据包"></a>数据包</h2><p>官方文档没怎么说明，日后自己需要开发时会补充</p>
-<h2 id="语言"><a href="#语言" class="headerlink" title="语言"></a>语言</h2><p>我的世界的语言界面由许多的语言，在这里将介绍如何写国际化的语言（英语）以及本地化（中文）</p>
-<h3 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h3><p>位于assets&#x2F;“namespace”&#x2F;lang&#x2F;“locale”.json</p>
-<p>比如namespace为examplemod，locale为中文，则路径为assets&#x2F;examplemod&#x2F;lang&#x2F;zh_cn.json</p>
+<p>​    则需要在textures下创建一个item文件夹（此处的文件夹名与上方json里的layer0那一行的item相同），里面放置你的材质图片并命名为iron_dagger.png，此处只举例了item，还有诸如Block等</p>
+<h2 id="数据包"><a href="#数据包" class="headerlink" title="数据包"></a>数据包</h2><p>​    官方文档没怎么说明，日后自己需要开发时会补充</p>
+<h2 id="语言"><a href="#语言" class="headerlink" title="语言"></a>语言</h2><p>​    我的世界的语言界面由许多的语言，在这里将介绍如何写国际化的语言（英语）以及本地化（中文）</p>
+<h3 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h3><p>​    位于assets&#x2F;“namespace”&#x2F;lang&#x2F;“locale”.json，比如namespace为examplemod，locale为中文，则路径为assets&#x2F;examplemod&#x2F;lang&#x2F;zh_cn.json</p>
 <p>locale:</p>
 <ul>
 <li>英文:en_us</li>
 <li>中文:zh_cn</li>
 </ul>
-<p>官方给出的样例:</p>
+<p>​    官方给出的样例:</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;item.examplemod.example_item&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Example Item Name&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;block.examplemod.example_block&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Example Block Name&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;commands.examplemod.examplecommand.error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Example Command Errored!&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 
-<p>examplemod为mod id，需要注意的是，注册不同类型的，比如方块和物品，前缀会不一样</p>
-<p>可以通过覆写getOrCreateDescriptionId来建立你的，比如在Item中，默认的为</p>
+<p>​    examplemod为mod id，需要注意的是，注册不同类型的，比如方块和物品，前缀会不一样</p>
+<p>​    可以通过覆写getOrCreateDescriptionId来建立你的，比如在Item中，默认的为</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">protected</span> String <span class="hljs-title function_">getOrCreateDescriptionId</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.descriptionId == <span class="hljs-literal">null</span>) &#123;<br>        <span class="hljs-built_in">this</span>.descriptionId = Util.makeDescriptionId(<span class="hljs-string">&quot;item&quot;</span>, Registry.ITEM.getKey(<span class="hljs-built_in">this</span>));<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.descriptionId;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>可以通过覆写为</p>
+<p>​    可以通过覆写为</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">protected</span> String <span class="hljs-title function_">getOrCreateDescriptionId</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.translation_key == <span class="hljs-literal">null</span>) &#123;<br>        <span class="hljs-built_in">this</span>.translation_key = Util.makeDescriptionId(<span class="hljs-string">&quot;item&quot;</span>, <span class="hljs-built_in">this</span>.getRegistryName());<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.translation_key;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>或者</p>
+<p>​    或者</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">protected</span> String <span class="hljs-title function_">getOrCreateDescriptionId</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.translation_key == <span class="hljs-literal">null</span>) &#123;<br>        <span class="hljs-built_in">this</span>.translation_key = Util.makeDescriptionId(<span class="hljs-string">&quot;items&quot;</span>, <span class="hljs-built_in">this</span>.getRegistryName());<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>.translation_key;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>这样做了后当你继承你写的这个类并添加item时，翻译应为</p>
+<p>如果覆写成了第二种，当你继承你写的这个类并添加item时，翻译应为</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;items.examplemod.example_item&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Example Item Name&quot;</span><span class="hljs-punctuation">,</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
 
 

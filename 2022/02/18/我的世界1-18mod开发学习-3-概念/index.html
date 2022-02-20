@@ -296,56 +296,52 @@
 </div>
 <div class="article-content">
     <div id="article" class="content">
-        <h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><h3 id="是什么"><a href="#是什么" class="headerlink" title="是什么"></a>是什么</h3><p>你关注了一个微信公众号，微信公众号发文章时会通知你有新文章了，你阅读了新文章后可能会做某些操作比如评论，点赞等</p>
-<p>在上面场景中，微信公众号发布新文章是一个事件，关注微信公众号就是订阅了这个事件，通知你时代表调用了你的一个函数来通知，新文章代表的是在这个事件包含的内容（参数），做出的某些操作就是你在这个函数中的操作，场景可以简化为：</p>
+        <h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><h3 id="是什么"><a href="#是什么" class="headerlink" title="是什么"></a>是什么</h3><p>​    你关注了一个微信公众号，微信公众号发文章时会通知你有新文章了，你阅读了新文章后可能会做某些操作比如评论，点赞等</p>
+<p>​    在上面场景中，微信公众号发布新文章是一个事件，关注微信公众号就是订阅了这个事件，通知你时代表调用了你的一个函数来通知，新文章代表的是在这个事件包含的内容（参数），做出的某些操作就是你在这个函数中的操作，场景可以简化为：</p>
 <ol>
 <li>关注公众号</li>
 <li>公众号发布新文章</li>
 <li>通知你</li>
 <li>做出操作</li>
 </ol>
-<p>如果替换成事件，则为：</p>
+<p>​    如果替换成事件，则为：</p>
 <ol>
 <li>订阅事件</li>
 <li>事件发生</li>
 <li>调用你在订阅时给出的函数</li>
 <li>你在函数内做出操作</li>
 </ol>
-<p>详细可以参考<a target="_blank" rel="noopener" href="https://www.runoob.com/design-pattern/observer-pattern.html">观察者模式</a></p>
-<h3 id="Forge中的事件"><a href="#Forge中的事件" class="headerlink" title="Forge中的事件"></a>Forge中的事件</h3><p>大概分为两条线，一个是游戏中的事件线，一个是模组事件线</p>
-<h4 id="游戏事件线"><a href="#游戏事件线" class="headerlink" title="游戏事件线"></a>游戏事件线</h4><p>如攻击实体，与实体交互等事件</p>
+<p>​    详细可以参考<a target="_blank" rel="noopener" href="https://www.runoob.com/design-pattern/observer-pattern.html">观察者模式</a></p>
+<h3 id="Forge中的事件"><a href="#Forge中的事件" class="headerlink" title="Forge中的事件"></a>Forge中的事件</h3><p>​    大概分为两条线，一个是游戏中的事件线，一个是模组事件线</p>
+<h4 id="游戏事件线"><a href="#游戏事件线" class="headerlink" title="游戏事件线"></a>游戏事件线</h4><p>​    如攻击实体，与实体交互等事件</p>
 <h4 id="模组事件线"><a href="#模组事件线" class="headerlink" title="模组事件线"></a>模组事件线</h4><p><a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/events/intro/#mod-event-bus">点我</a></p>
-<h3 id="怎么用"><a href="#怎么用" class="headerlink" title="怎么用"></a>怎么用</h3><h4 id="调用的函数定义方法"><a href="#调用的函数定义方法" class="headerlink" title="调用的函数定义方法"></a>调用的函数定义方法</h4><p>在函数前加上注解 @SubscribeEvent，参数名为你要订阅的事件</p>
-<p>如我想要订阅TickEvent.PlayerTickEvent则函数为:</p>
+<h3 id="怎么用"><a href="#怎么用" class="headerlink" title="怎么用"></a>怎么用</h3><h4 id="调用的函数定义方法"><a href="#调用的函数定义方法" class="headerlink" title="调用的函数定义方法"></a>调用的函数定义方法</h4><p>​    在函数前加上注解 @SubscribeEvent，参数名为你要订阅的事件，如我想要订阅TickEvent.PlayerTickEvent则函数为:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SubscribeEvent</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onTick</span><span class="hljs-params">(TickEvent.PlayerTickEvent playerTickEvent)</span> &#123;<br>    <span class="hljs-comment">//do something...</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
-<h4 id="如何注册函数"><a href="#如何注册函数" class="headerlink" title="如何注册函数"></a>如何注册函数</h4><p>有两种方法来注册你的函数</p>
-<h5 id="第一种方法"><a href="#第一种方法" class="headerlink" title="第一种方法"></a>第一种方法</h5><p>对于游戏事件线，使用MinecraftForge.EVENT_BUS.register({Class})来将这个类注册进事件系统，其中的Class可以为静态也可以new一个，如果是静态的则需要将你要传递的函数设为static，不过为new，则将static去除，比如</p>
+<h4 id="如何注册函数"><a href="#如何注册函数" class="headerlink" title="如何注册函数"></a>如何注册函数</h4><p>​    有两种方法来注册你的函数</p>
+<h5 id="第一种方法"><a href="#第一种方法" class="headerlink" title="第一种方法"></a>第一种方法</h5><p>​    对于游戏事件线，使用MinecraftForge.EVENT_BUS.register({Class})来将这个类注册进事件系统，其中的Class可以为静态也可以new一个，如果是静态的则需要将你要传递的函数设为static，不过为new，则将static去除，下面给出了两个例子</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SubsucribeExample</span>&#123;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">SubsucribeExample</span><span class="hljs-params">()</span>&#123;<br>        MinecraftForge.EVENT_BUS.register(<span class="hljs-built_in">this</span>);<br>    &#125;<br>    <br>    <span class="hljs-meta">@SubscribeEvent</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onTick</span><span class="hljs-params">(TickEvent.PlayerTickEvent playerTickEvent)</span> &#123;<br>        <span class="hljs-comment">//do something...</span><br>    &#125;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>为一套，</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SubsucribeExample</span>&#123;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">SubsucribeExample</span><span class="hljs-params">()</span>&#123;<br>        MinecraftForge.EVENT_BUS.register(SubsucribeExample.class);<br>    &#125;<br>    <br>    <span class="hljs-meta">@SubscribeEvent</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">onTick</span><span class="hljs-params">(TickEvent.PlayerTickEvent playerTickEvent)</span> &#123;<br>        <span class="hljs-comment">//do something...</span><br>    &#125;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>为一套</p>
-<p>对于模组事件</p>
+<p>​    对于模组事件</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">FMLJavaModLoadingContext.get().getModEventBus().addListener(&#123;函数名&#125;);<br></code></pre></td></tr></table></figure>
 
-<p>即可注册函数，不用在函数前加上@SubscribeEvent，</p>
-<p>或</p>
+<p>​    即可注册函数，不用在函数前加上@SubscribeEvent，或</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">FMLJavaModLoadingContext.get().getModEventBus().register(&#123;类名&#125;);<br></code></pre></td></tr></table></figure>
 
-<p>同样也要注意静态问题</p>
-<h5 id="第二种方法"><a href="#第二种方法" class="headerlink" title="第二种方法"></a>第二种方法</h5><p>在整个类前加入@Mod.EventBusSubscriber注解，注解源代码如下：</p>
+<p>​    同样也要注意静态问题</p>
+<h5 id="第二种方法"><a href="#第二种方法" class="headerlink" title="第二种方法"></a>第二种方法</h5><p>​    在整个类前加入@Mod.EventBusSubscriber注解，注解源代码如下：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-meta">@Target(ElementType.TYPE)</span><br><span class="hljs-meta">@interface</span> EventBusSubscriber &#123;<br>    Dist[] value() <span class="hljs-keyword">default</span> &#123; Dist.CLIENT, Dist.DEDICATED_SERVER &#125;;<br><br>    String <span class="hljs-title function_">modid</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;&quot;</span>;<br><br>    Bus <span class="hljs-title function_">bus</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> Bus.FORGE;<br><br>    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Bus</span> &#123;<br>        FORGE(Bindings.getForgeBus()),<br>        MOD(()-&gt; FMLJavaModLoadingContext.get().getModEventBus());<br><br>        <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> Supplier&lt;IEventBus&gt; busSupplier;<br><br>        Bus(<span class="hljs-keyword">final</span> Supplier&lt;IEventBus&gt; eventBusSupplier) &#123;<br>            <span class="hljs-built_in">this</span>.busSupplier = eventBusSupplier;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> Supplier&lt;IEventBus&gt; <span class="hljs-title function_">bus</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> busSupplier;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>阅读源码可知，value的值为物理服务端还是物理客户端，或者两者均可，modid为你的模组id，bus为你要订阅的事件线，FORGE为游戏事件线，MOD为模组事件线，通过配置这三者可以达到你想要的目的</p>
-<p>需要注意的是，通过这种方法注册，函数需要都是static</p>
-<h3 id="事件的一些属性"><a href="#事件的一些属性" class="headerlink" title="事件的一些属性"></a>事件的一些属性</h3><h4 id="能否取消"><a href="#能否取消" class="headerlink" title="能否取消"></a>能否取消</h4><p>通过调用event中的isCancelable()函数来得到当前事件是否能被取消，或者阅读源码查看是否有@Cancelable注解，有即为可以取消，函数返回true，否即没有，如果需要取消事件，可以调用setCanceled(boolean canceled)来决定是否取消事件，不能取消一个不可取消的事件，否则会崩溃</p>
-<h4 id="事件结果"><a href="#事件结果" class="headerlink" title="事件结果"></a>事件结果</h4><p>有一些事件有结果，比如树苗长为大树事件，官方注解中提到</p>
+<p>​    阅读源码可知，value的值为物理服务端还是物理客户端，或者两者均可，modid为你的模组id，bus为你要订阅的事件线，FORGE为游戏事件线，MOD为模组事件线，通过配置这三者可以达到你想要的目的</p>
+<p>​    需要注意的是，通过这种方法注册，函数需要都是static</p>
+<h3 id="事件的一些属性"><a href="#事件的一些属性" class="headerlink" title="事件的一些属性"></a>事件的一些属性</h3><h4 id="能否取消"><a href="#能否取消" class="headerlink" title="能否取消"></a>能否取消</h4><p>​    通过调用event中的isCancelable()函数来得到当前事件是否能被取消，或者阅读源码查看是否有@Cancelable注解，有即为可以取消，函数返回true，否即没有，如果需要取消事件，可以调用setCanceled(boolean canceled)来决定是否取消事件，不能取消一个不可取消的事件，否则会崩溃</p>
+<h4 id="事件结果"><a href="#事件结果" class="headerlink" title="事件结果"></a>事件结果</h4><p>​    有一些事件有结果，比如树苗长为大树事件，官方注解中提到</p>
 <img src="image-20220218184541813.png" alt="image-20220218184541813" style="zoom:50%;" />
 
-<p>通过调用setResult（Result result）来返回一个结果，可以调用hasResult()来判断该事件是否有结果，有些没有有些有</p>
-<h4 id="优先级"><a href="#优先级" class="headerlink" title="优先级"></a>优先级</h4><p>@SubscribeEvent的注解具有优先级，可以通过设置priority值来设置处理优先级，可以为</p>
+<p>​    通过调用setResult（Result result）来返回一个结果，可以调用hasResult()来判断该事件是否有结果，有些没有有些有</p>
+<h4 id="优先级"><a href="#优先级" class="headerlink" title="优先级"></a>优先级</h4><p>​    @SubscribeEvent的注解具有优先级，可以通过设置priority值来设置处理优先级，可以为</p>
 <ul>
 <li>HIGHEST</li>
 <li>HIGH</li>
@@ -353,11 +349,11 @@
 <li>LOW</li>
 <li>LOWEST</li>
 </ul>
-<p>从上到下代表优先级从高到底，优先级高的会先执行（默认NORMAL）</p>
-<h4 id="子事件"><a href="#子事件" class="headerlink" title="子事件"></a>子事件</h4><p>如果你订阅了一个父事件，比如PlayerEvent，则他属下的所有事件发生时都会触发你的函数</p>
-<h2 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h2><p>在之前提到了游戏需要添加物品，方块等，在这里称为注册物品，需要注册物品才能让游戏知道有这个物品。</p>
-<h3 id="根据什么注册"><a href="#根据什么注册" class="headerlink" title="根据什么注册"></a>根据什么注册</h3><p>注册物品通常用使用的是ResourceLocation来注册，在实例化一个物品时通过setRegistryName来设置ResourceLocation，也可以实例化后再自己设置，注意的是只能设置一次，使用getRegistryName来获取。</p>
-<p>如果一个Block和一个Item的ResourceLocation内名字相同，不会冲突，但如果不同的Item使用了同一个namespace和path，则最后注册的将会覆盖第一个</p>
+<p>​    从上到下代表优先级从高到底，优先级高的会先执行（默认NORMAL）</p>
+<h4 id="子事件"><a href="#子事件" class="headerlink" title="子事件"></a>子事件</h4><p>​    如果你订阅了一个父事件，比如PlayerEvent，则他属下的所有事件发生时都会触发你的函数</p>
+<h2 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h2><p>​    在之前提到了游戏需要添加物品，方块等，在这里称为注册物品，需要注册物品才能让游戏知道有这个物品。</p>
+<h3 id="根据什么注册"><a href="#根据什么注册" class="headerlink" title="根据什么注册"></a>根据什么注册</h3><p>​    注册物品通常用使用的是ResourceLocation来注册，在实例化一个物品时通过setRegistryName来设置ResourceLocation，也可以实例化后再自己设置，注意的是只能设置一次，使用getRegistryName来获取。</p>
+<p>​    如果一个Block和一个Item的ResourceLocation内名字相同，不会冲突，但如果不同的Item使用了同一个namespace和path，则最后注册的将会覆盖第一个</p>
 <h3 id="如何注册"><a href="#如何注册" class="headerlink" title="如何注册"></a>如何注册</h3><h4 id="DeferredRegister"><a href="#DeferredRegister" class="headerlink" title="DeferredRegister"></a>DeferredRegister</h4><p>官方文档给出的案例：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> DeferredRegister&lt;Block&gt; BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> RegistryObject&lt;Block&gt; ROCK_BLOCK = BLOCKS.register(<span class="hljs-string">&quot;rock&quot;</span>, () -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">Block</span>(BlockBehaviour.Properties.of(Material.STONE)));<br><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">ExampleMod</span><span class="hljs-params">()</span> &#123;<br>    BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());<br>&#125;<br></code></pre></td></tr></table></figure>
 
@@ -368,43 +364,36 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SubscribeEvent</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">registerItems</span><span class="hljs-params">(RegistryEvent.Register&lt;Item&gt; event)</span> &#123;<br>    event.getRegistry().registerAll(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Item</span>(...), <span class="hljs-keyword">new</span> <span class="hljs-title class_">Item</span>(...), ...);<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>剩下待补充…</p>
-<h3 id="怎么引用"><a href="#怎么引用" class="headerlink" title="怎么引用"></a>怎么引用</h3><p>第一种方法为使用RegistryObject，第二种方法为@ObjectHolder</p>
-<p>在注册完物品后会对这些进行更新</p>
-<h4 id="RegistryObject"><a href="#RegistryObject" class="headerlink" title="RegistryObject"></a>RegistryObject</h4><p>官方的例子比较好地说明了如何使用</p>
+<h3 id="怎么引用"><a href="#怎么引用" class="headerlink" title="怎么引用"></a>怎么引用</h3><p>​    第一种方法为使用RegistryObject，第二种方法为@ObjectHolder，这些在注册完物品后会更新</p>
+<h4 id="RegistryObject"><a href="#RegistryObject" class="headerlink" title="RegistryObject"></a>RegistryObject</h4><p>​    官方的例子比较好地说明了如何使用</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> RegistryObject&lt;Item&gt; BOW = RegistryObject.of(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ResourceLocation</span>(<span class="hljs-string">&quot;minecraft:bow&quot;</span>), ForgeRegistries.ITEMS);<br><br><span class="hljs-comment">// assume that ManaType is a valid registry, and &#x27;neomagicae:coffeinum&#x27; is a valid object within that registry</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> RegistryObject&lt;ManaType&gt; COFFEINUM = RegistryObject.of(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ResourceLocation</span>(<span class="hljs-string">&quot;neomagicae&quot;</span>, <span class="hljs-string">&quot;coffeinum&quot;</span>), () -&gt; ManaType.class); <br></code></pre></td></tr></table></figure>
 
-<p>使用RegistryObject.of(ResourceLocation，游戏中的某个东西)</p>
-<h4 id="ObjectHandler"><a href="#ObjectHandler" class="headerlink" title="@ObjectHandler"></a>@ObjectHandler</h4><p>官方的规则较为复杂..在这只放出一些使用案例，由于后面注释过长，因此想要看原来的<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/concepts/registries/#using-objectholder">点这</a>，在此只会说明注入的namespace和路径，如果没有诸如成功，则会注释其他</p>
+<p>​    使用RegistryObject.of(ResourceLocation，游戏中的某个东西)</p>
+<h4 id="ObjectHandler"><a href="#ObjectHandler" class="headerlink" title="@ObjectHandler"></a>@ObjectHandler</h4><p>​    官方的规则较为复杂..在这只放出一些使用案例，由于后面注释过长，因此想要看原来的<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/concepts/registries/#using-objectholder">点这</a>，在此只会说明注入的namespace和路径，如果没有诸如成功，则会注释其他</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@ObjectHolder(&quot;minecraft&quot;)</span> <span class="hljs-comment">// namespace: minecraft</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">AnnotatedHolder</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Block</span> <span class="hljs-variable">diamond_block</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;   <span class="hljs-comment">// minecraft:diamond_block</span><br>    <span class="hljs-meta">@ObjectHolder(&quot;ambient.cave&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">SoundEvent</span> <span class="hljs-variable">ambient_sound</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;    <span class="hljs-comment">// minecraft:ambient.cave</span><br><br>    <span class="hljs-comment">// Assume for the next entry that [ManaType] is a valid registry.          </span><br>    <span class="hljs-meta">@ObjectHolder(&quot;neomagicae:coffeinum&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">ManaType</span> <span class="hljs-variable">coffeinum</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;    <span class="hljs-comment">// neomagicae:coffeinum</span><br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Item</span> <span class="hljs-variable">ENDER_PEARL</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;      <span class="hljs-comment">// minecraft:ender_pearl</span><br><br>    <span class="hljs-meta">@ObjectHolder(&quot;minecraft:arrow&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">ArrowItem</span> <span class="hljs-variable">arrow</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;       <span class="hljs-comment">// minecraft:arrow                                             </span><br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">Block</span> <span class="hljs-variable">bedrock</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;               <span class="hljs-comment">// 没有final，获得不成功</span><br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">CreativeModeTab</span> <span class="hljs-variable">group</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>; <span class="hljs-comment">// 没有对应的Registry，所以会抛出异常</span><br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">UnannotatedHolder</span> &#123; <span class="hljs-comment">// 注意到没有注解</span><br>    <span class="hljs-meta">@ObjectHolder(&quot;minecraft:flame&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Enchantment</span> <span class="hljs-variable">flame</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;     <span class="hljs-comment">// minecraft:flame</span><br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Biome</span> <span class="hljs-variable">ice_flat</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;        <span class="hljs-comment">// 没获得</span><br><br>    <span class="hljs-meta">@ObjectHolder(&quot;minecraft:creeper&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">Entity</span> <span class="hljs-variable">creeper</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;              <span class="hljs-comment">// Entity没有对应的Registry，会抛出异常</span><br><br>    <span class="hljs-meta">@ObjectHolder(&quot;levitation&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Potion</span> <span class="hljs-variable">levitation</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;     <span class="hljs-comment">// 没有namespace，抛出异常，没获得</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>具体有没有对应的Registry参考 net.minecraftforge.registries.ForgeRegistries。也可以自定义Registry，如上面代码中的ManaType</p>
-<h3 id="创建自己的Registry"><a href="#创建自己的Registry" class="headerlink" title="创建自己的Registry"></a>创建自己的Registry</h3><p>要创建自己的Registry，首先要实现IForgeRegistryEntry，其中定义了setRegistryName和getRegistryName，官方推荐继承ForgeRegistryEntry，其中有默认的实现 </p>
-<h4 id="将自己的Registry注册到游戏中"><a href="#将自己的Registry注册到游戏中" class="headerlink" title="将自己的Registry注册到游戏中"></a>将自己的Registry注册到游戏中</h4><p>首先需要一个类继承了ForgeRegistryEntry或者实现了IForgeRegistryEntry</p>
-<p>订阅RegistryEvent.NewRegistry，经过测试，这一行代码能顺利注册自己的Registry</p>
+<p>​    具体有没有对应的Registry参考 net.minecraftforge.registries.ForgeRegistries。也可以自定义Registry，如上面代码中的ManaType</p>
+<h3 id="创建自己的Registry"><a href="#创建自己的Registry" class="headerlink" title="创建自己的Registry"></a>创建自己的Registry</h3><p>​    要创建自己的Registry，首先要实现IForgeRegistryEntry，其中定义了setRegistryName和getRegistryName，官方推荐继承ForgeRegistryEntry，其中有默认的实现 </p>
+<h4 id="将自己的Registry注册到游戏中"><a href="#将自己的Registry注册到游戏中" class="headerlink" title="将自己的Registry注册到游戏中"></a>将自己的Registry注册到游戏中</h4><p>​    首先需要一个类继承了ForgeRegistryEntry或者实现了IForgeRegistryEntry</p>
+<p>​    订阅RegistryEvent.NewRegistry，经过测试，这一行代码能顺利注册自己的Registry</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java">IForgeRegistry&lt;ManaType&gt; manaTypes = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RegistryBuilder</span>&lt;ManaType&gt;().setName(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ResourceLocation</span>(<span class="hljs-string">&quot;examplemod:mana_type&quot;</span>)).setType(ManaType.class).create();<br></code></pre></td></tr></table></figure>
 
-<p>其中的manaTypes变量最好保存</p>
-<p>manatype只是做个例子，你可以自定义自己的registry，比如技能等，setName和setType是必须的，还有其他的函数诸如setMaxID等</p>
-<p>实测不加入setName可以注册成功，可以进入我的世界那个界面，但进入世界时会崩溃，所以需要setName</p>
-<h3 id="处理不存在的registry-object"><a href="#处理不存在的registry-object" class="headerlink" title="处理不存在的registry object"></a>处理不存在的registry object</h3><p>当mod更新时，可能会删除或者加入一些物品，对于那些删除的物品，可以通过订阅RegistryEvent.MissingMappings来解决删除物品的问题，具体见<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/concepts/registries/#handling-missing-entries">此</a></p>
-<h2 id="模组生命周期"><a href="#模组生命周期" class="headerlink" title="模组生命周期"></a>模组生命周期</h2><p>模组加载过程中，各种生命周期事件会在特定的事件总线（FMLJavaModLoadingContext.get().getModEventBus()）</p>
-<p>上触发，比如注册对象，准备数据等</p>
-<h3 id="注册表事件"><a href="#注册表事件" class="headerlink" title="注册表事件"></a>注册表事件</h3><p>在mod被实例化后会被触发，有两个事件，NewRegistry和Register事件，NewRegistry即为创建自定义Registry，Register使用方法之前提到了，例子：</p>
+<p>​    其中的manaTypes变量最好保存，他只是做个例子，你可以自定义自己的registry，比如技能等，setName和setType是必须的，还有其他的函数诸如setMaxID等。实测不加入setName可以注册成功，可以进入我的世界那个界面，但进入世界时会崩溃，所以需要setName</p>
+<h3 id="处理不存在的registry-object"><a href="#处理不存在的registry-object" class="headerlink" title="处理不存在的registry object"></a>处理不存在的registry object</h3><p>​    当mod更新时，可能会删除或者加入一些物品，对于那些删除的物品，可以通过订阅RegistryEvent.MissingMappings来解决删除物品的问题，具体见<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/concepts/registries/#handling-missing-entries">此</a></p>
+<h2 id="模组生命周期"><a href="#模组生命周期" class="headerlink" title="模组生命周期"></a>模组生命周期</h2><p>​    模组加载过程中，各种生命周期事件会在特定的事件总线（FMLJavaModLoadingContext.get().getModEventBus()）上触发，比如注册对象，准备数据等</p>
+<h3 id="注册表事件"><a href="#注册表事件" class="headerlink" title="注册表事件"></a>注册表事件</h3><p>​    在mod被实例化后会被触发，有两个事件，NewRegistry和Register事件，NewRegistry即为创建自定义Registry，Register使用方法之前提到了，例子：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SubscribeEvent</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">registerItems</span><span class="hljs-params">(RegistryEvent.Register&lt;Item&gt; event)</span> &#123;<br>    event.getRegistry().registerAll(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Item</span>(...), <span class="hljs-keyword">new</span> <span class="hljs-title class_">Item</span>(...), ...);<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<h3 id="数据生成"><a href="#数据生成" class="headerlink" title="数据生成"></a>数据生成</h3><p>待补充</p>
-<h3 id="一般设置"><a href="#一般设置" class="headerlink" title="一般设置"></a>一般设置</h3><p>事件为FMLCommonSetupEvent，在物理服务端和物理客户端中都会被触发，比如注册capabilities（后期会提到）</p>
-<h3 id="不同端的设置"><a href="#不同端的设置" class="headerlink" title="不同端的设置"></a>不同端的设置</h3><p>对于物理客户端，事件为FMLClientSetupEvent</p>
-<p>对于物理服务端，事件为FMLDedicatedServerSetupEvent</p>
-<h3 id="跨模组交流"><a href="#跨模组交流" class="headerlink" title="跨模组交流"></a>跨模组交流</h3><p>两个事件：</p>
+<h3 id="数据生成"><a href="#数据生成" class="headerlink" title="数据生成"></a>数据生成</h3><p>​    待补充</p>
+<h3 id="一般设置"><a href="#一般设置" class="headerlink" title="一般设置"></a>一般设置</h3><p>​    事件为FMLCommonSetupEvent，在物理服务端和物理客户端中都会被触发，比如注册capabilities（后期会提到）</p>
+<h3 id="不同端的设置"><a href="#不同端的设置" class="headerlink" title="不同端的设置"></a>不同端的设置</h3><p>​    对于物理客户端，事件为FMLClientSetupEvent，对于物理服务端，事件为FMLDedicatedServerSetupEvent</p>
+<h3 id="跨模组交流"><a href="#跨模组交流" class="headerlink" title="跨模组交流"></a>跨模组交流</h3><p>​    两个事件：</p>
 <ul>
 <li>InterModEnqueueEvent</li>
 <li>InterModProcessEvent</li>
 </ul>
-<p>第一个事件为向不同mod发送消息</p>
-<p>第二个事件为接受不同消息</p>
-<p>发送和接受参考InterModComms类，包为net.minecraftforge.fml</p>
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>还有两个生命周期事件</p>
+<p>​    第一个事件为向不同mod发送消息，第二个事件为接受不同消息，发送和接受参考InterModComms类，包为net.minecraftforge.fml</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>​    还有两个生命周期事件</p>
 <ul>
 <li>FMLConstructModEvent，在mod实例化之后，RegistryEvent之前触发</li>
 <li>FMLLoadCompleteEvent，在InterModComms（跨模组交流）后触发</li>
