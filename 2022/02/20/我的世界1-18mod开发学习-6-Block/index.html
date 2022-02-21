@@ -300,19 +300,19 @@
 <h3 id="新建一个方块"><a href="#新建一个方块" class="headerlink" title="新建一个方块"></a>新建一个方块</h3><p>​    首先来看Block的构造方法:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">Block</span><span class="hljs-params">(BlockBehaviour.Properties p_49795_)</span> &#123;<br>    <span class="hljs-built_in">super</span>(p_49795_);<br>    StateDefinition.Builder&lt;Block, BlockState&gt; builder = <span class="hljs-keyword">new</span> <span class="hljs-title class_">StateDefinition</span>.Builder&lt;&gt;(<span class="hljs-built_in">this</span>);<br>    <span class="hljs-built_in">this</span>.createBlockStateDefinition(builder);<br>    <span class="hljs-built_in">this</span>.stateDefinition = builder.create(Block::defaultBlockState, BlockState::<span class="hljs-keyword">new</span>);<br>    <span class="hljs-built_in">this</span>.registerDefaultState(<span class="hljs-built_in">this</span>.stateDefinition.any());<br>    <span class="hljs-keyword">if</span> (SharedConstants.IS_RUNNING_IN_IDE) &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getClass().getSimpleName();<br>        <span class="hljs-keyword">if</span> (!s.endsWith(<span class="hljs-string">&quot;Block&quot;</span>)) &#123;<br>            LOGGER.error(<span class="hljs-string">&quot;Block classes should end with Block and &#123;&#125; doesn&#x27;t.&quot;</span>, (Object)s);<br>        &#125;<br>    &#125;<br>    initClient();<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>​    可以看到，如果需要新建一个Block，需要传入一个BlockBehaviour.Properties，Properties内含方块的一些属性，比如是否能碰撞，爆炸抗性，破坏时间等，这里只介绍最简单的创建方法，其他的均为默认，新建一个类名为Dust，创建完毕后即创建好并且注册到了游戏内，在给的代码框架内中的BlockBase，已经自动的添加到了ModBlocks.BLOCKS和BLOCK_ITEMS等待进一步注册</p>
+<p>​    可以看到，如果需要新建一个Block，需要传入一个<code>BlockBehaviour.Properties</code>，Properties内含方块的一些属性，比如是否能碰撞，爆炸抗性，破坏时间等，这里只介绍最简单的创建方法，其他的均为默认，新建一个类名为Dust，创建完毕后即创建好并且注册到了游戏内，在给的代码框架内中的<code>BlockBase</code>，已经自动的添加到了<code>ModBlocks.BLOCKS</code>和<code>BLOCK_ITEMS</code>等待进一步注册</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ColorfulBlock</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BlockBase</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">ColorfulBlock</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">super</span>(<span class="hljs-string">&quot;colorful_block&quot;</span>, BlockBehaviour.Properties.of(Material.DIRT));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>​    别忘了在ModBlocks中添加以下代码实例化方块</p>
+<p>​    别忘了在<code>ModBlocks</code>中添加以下代码实例化方块</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Block</span> <span class="hljs-variable">COLORFUL_BLOCK</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ColorfulBlock</span>();<br></code></pre></td></tr></table></figure>
 
-<h3 id="注册到游戏内"><a href="#注册到游戏内" class="headerlink" title="注册到游戏内"></a>注册到游戏内</h3><p>​    Block与Item不同，Item注册完后可以直接看到，Block除了注册自身，还需要注册一个叫做BlockItem，在给出的代码中RegistryHandler中的onRegisterItems中可以看到除了注册Item还注册了ItemBlock，在这个方法内注册了所有的BlockItem</p>
+<h3 id="注册到游戏内"><a href="#注册到游戏内" class="headerlink" title="注册到游戏内"></a>注册到游戏内</h3><p>​    Block与Item不同，Item注册完后可以直接看到，Block除了注册自身，还需要注册一个叫做BlockItem，在给出的代码中RegistryHandler中的<code>onRegisterItems</code>中可以看到除了注册Item还注册了ItemBlock，在这个方法内注册了所有的BlockItem</p>
 <p>​    在我的世界中，放置在世界里的叫做Block，在物品栏或者其他存储内的应为Item，为了让Block和Item有联系，存在一个类叫做BlockItem，这个类继承了Item，并且内含一个block用于存储自己所属的Block，BlockItem实现方块放置等方法，新建一个Block时，默认不包含一个BlockItem，因此除了注册Block，还需注册BlockItem</p>
 <h4 id="创建BlockItem"><a href="#创建BlockItem" class="headerlink" title="创建BlockItem"></a>创建BlockItem</h4><p>​    构造方法</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">BlockItem</span><span class="hljs-params">(Block p_40565_, Item.Properties p_40566_)</span> &#123;<br>    <span class="hljs-built_in">super</span>(p_40566_);<br>    <span class="hljs-built_in">this</span>.block = p_40565_;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>​    其中super代表Item，在这里可以发现，需要传入Block，以及Item.Properties来创建一个BlockItem，在BlockBase中自动添加进了ModBlock内的BLOCK_ITEMS等待注册</p>
-<p><strong>有关CreativeTab</strong>（创造模式物品栏）</p>
+<p>​    其中super代表Item，在这里可以发现，需要传入Block，以及<code>Item.Properties</code>来创建一个BlockItem，在BlockBase中自动添加进了ModBlock内的<code>BLOCK_ITEMS</code>等待注册</p>
+<p>**有关<code>CreativeTab</code>**（创造模式物品栏）</p>
 <p>​    在代码框架中的ExampleMod已经创建了一个最简单的创造模式物品栏，最简单的CreativeModeTab创建方法:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">CreativeModeTab</span> <span class="hljs-variable">creativeModeTab</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CreativeModeTab</span>(模组id) &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> ItemStack <span class="hljs-title function_">makeIcon</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ItemStack</span>(Items.DIAMOND);<br>    &#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
 
@@ -348,68 +348,76 @@
 <p>​    第二种更为实用，对于BlockState，每一种状态组合在游戏创建初期就已经确认，不可变，因此可以用(&#x3D;&#x3D;)来检查两个状态是否相等</p>
 <h3 id="如何创建一种状态属性"><a href="#如何创建一种状态属性" class="headerlink" title="如何创建一种状态属性"></a>如何创建一种状态属性</h3><p>​    官方已经给好了四种基本状态，为</p>
 <ul>
-<li>IntegerProperty </li>
-<li>DirectionProperty</li>
-<li>EnumProperty</li>
-<li>BooleanProperty</li>
+<li><code>IntegerProperty </code></li>
+<li><code>DirectionProperty</code></li>
+<li><code>EnumProperty</code></li>
+<li><code>BooleanProperty</code></li>
 </ul>
 <p>​    分别是整数属性，方向属性，Enum属性，布尔属性，需要创建这些类型的可以直接new，对于他们各自的构造方法在此不细究，<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/blocks/states/#implementing-block-states">官方文档</a>给的较为详细</p>
 <p>​    如果需要创建自己的状态，需要继承Property&lt;?&gt;类，在这里面实现一些方法，具体实现可以参考源码的实现完成的属性</p>
-<h3 id="注册到Block中"><a href="#注册到Block中" class="headerlink" title="注册到Block中"></a>注册到Block中</h3><p>​    当确定需要一个状态时，需要覆写createBlockStateDefinition(StateDefinition.Builder)来加入，通过调用registerDefaultState来改变默认状态，在这里同样使用之前的first_block，但是改为了一个类，在这里给出覆写以及更改默认状态后的代码</p>
+<h3 id="注册到Block中"><a href="#注册到Block中" class="headerlink" title="注册到Block中"></a>注册到Block中</h3><p>​    当确定需要一个状态时，需要覆写<code>createBlockStateDefinition(StateDefinition.Builder)</code>来加入，通过调用<code>registerDefaultState</code>来改变默认状态，在这里同样使用之前的first_block，但是改为了一个类，在这里给出覆写以及更改默认状态后的代码</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ColorfulBlock</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BlockBase</span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">BooleanProperty</span> <span class="hljs-variable">BOOLEAN_PROPERTY</span> <span class="hljs-operator">=</span> BooleanProperty.create(<span class="hljs-string">&quot;example_boolean&quot;</span>);;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">ColorfulBlock</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">super</span>(<span class="hljs-string">&quot;colorful_block&quot;</span>, BlockBehaviour.Properties.of(Material.DIRT));<br>        <span class="hljs-built_in">this</span>.registerDefaultState(<br>                <span class="hljs-built_in">this</span>.stateDefinition.any()<br>                        .setValue(BOOLEAN_PROPERTY, <span class="hljs-literal">false</span>)<br>        );<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">createBlockStateDefinition</span><span class="hljs-params">(StateDefinition.Builder&lt;Block, BlockState&gt; stateBuilder)</span> &#123;<br>        stateBuilder.add(BOOLEAN_PROPERTY);<br>    &#125;<br>    <br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>​    如果需要覆盖放置块时的BlockState，可以通过覆写getStateForPlacement方法，默认为方块的默认状态，在此就不修改了</p>
-<h3 id="与blockstates中的json文件交互"><a href="#与blockstates中的json文件交互" class="headerlink" title="与blockstates中的json文件交互"></a>与blockstates中的json文件交互</h3><p>待补</p>
+<p>​    如果需要覆盖放置块时的BlockState，可以通过覆写<code>getStateForPlacement</code>方法，默认为方块的默认状态，写完后在游戏内按F3，对着方块在右边即可看到有一个<code>example_boolean:false</code></p>
+<h3 id="与blockstates中的json文件交互"><a href="#与blockstates中的json文件交互" class="headerlink" title="与blockstates中的json文件交互"></a>与blockstates中的json文件交互</h3><p>​    在ColorfulBlock中覆写<code>getStateForPlacement</code>语句，这样能修改放置下来的布尔属性</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Nullable</span><br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> BlockState <span class="hljs-title function_">getStateForPlacement</span><span class="hljs-params">(BlockPlaceContext context)</span> &#123;<br>    <span class="hljs-keyword">if</span>(context.getClickedPos().getX()%<span class="hljs-number">2</span>==<span class="hljs-number">0</span>||context.getClickedPos().getZ()%<span class="hljs-number">2</span>==<span class="hljs-number">0</span>)&#123;<br>        <span class="hljs-keyword">return</span> defaultBlockState().setValue(BOOLEAN_PROPERTY,<span class="hljs-literal">true</span>);<br>    &#125;<br>    <span class="hljs-keyword">return</span> defaultBlockState().setValue(BOOLEAN_PROPERTY,<span class="hljs-literal">false</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>​    意思为只有X和Z坐标为单数时，布尔属性为false，下面修改blockstates中的colorful_block.json为</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;variants&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;example_boolean=true&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;model&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;examplemod:block/colorful_block&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;example_boolean=false&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;model&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;minecraft:block/oak_log&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>​    设置完成后，进入游戏即可看到，当X和Z坐标为单数时，模型变为了橡木原木，其他模型不变（当然，如果你是加入语句之前放置的，之前的方块依旧为false，也就会渲染成橡木）</p>
+<p><img src="/2022/02/20/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-6-Block/image-20220221093606267.png" alt="image-20220221093606267"></p>
+<p>​    除了简单的判断example_boolean，还有其他的方法来判断多种属性(when… apply)，以及设置旋转，材质锁定等，具体见<a target="_blank" rel="noopener" href="https://minecraft.fandom.com/wiki/Model#Block_states">此链接</a></p>
 <h2 id="交互"><a href="#交互" class="headerlink" title="交互"></a>交互</h2><p>​    源码中的Block继承了BlockBehaviour，在里面有很多的交互方法以及获取一些值，forge文档中给出了不少例子可以作为<a target="_blank" rel="noopener" href="https://mcforge.readthedocs.io/en/1.18.x/blocks/interaction/#block-interaction">参考</a></p>
 <p>​    在此处只打出这些方法名，可以通过网页搜索看看有没有需要的，日后可能会拓展其中一些</p>
 <ul>
-<li>attack</li>
-<li>canBeReplaced</li>
-<li>canSurvive</li>
-<li>defaultDestroyTime</li>
-<li>defaultMaterialColor</li>
-<li>entityInside</li>
-<li>getAnalogOutputSignal</li>
-<li>getBlockSupportShape</li>
-<li>getCollsionShape</li>
-<li>getDirectSignal</li>
-<li>getDrops</li>
-<li>getFluidState</li>
-<li>getInteractionShape</li>
-<li>getLightBlock</li>
-<li>getLootTable</li>
-<li>getMaxHorizontalOffset</li>
-<li>getMaxVerticalOffset</li>
-<li>getMenuProvider</li>
-<li>getOcclusionShape</li>
-<li>getOffsetType</li>
-<li>getPistonPushReaction</li>
-<li>getRenderShape</li>
-<li>getSeed</li>
-<li>getShadeBrightness</li>
-<li>getShape</li>
-<li>getSignal</li>
-<li>getVisualShape</li>
-<li>hasAnalogOutputSignal</li>
-<li>isAir</li>
-<li>isCollsionShapeFullBlock</li>
-<li>isPathfindable</li>
-<li>isSignalSource</li>
-<li>mirror</li>
-<li>neighborChanged</li>
-<li>onPlace</li>
-<li>onProjectileHit</li>
-<li>onRemove</li>
-<li>randomTick</li>
-<li>rotate</li>
-<li>skipRendering</li>
-<li>spawnAfterBreak</li>
-<li>tick</li>
-<li>triggerEvent</li>
-<li>updateIndirectNeighbourShapes</li>
-<li>updateShape</li>
-<li>use</li>
-<li>useShapeForLightOcclusion</li>
+<li><code>attack</code></li>
+<li><code>canBeReplaced</code></li>
+<li><code>canSurvive</code></li>
+<li><code>defaultDestroyTime</code></li>
+<li><code>defaultMaterialColor</code></li>
+<li><code>entityInside</code></li>
+<li><code>getAnalogOutputSignal</code></li>
+<li><code>getBlockSupportShape</code></li>
+<li><code>getCollsionShape</code></li>
+<li><code>getDirectSignal</code></li>
+<li><code>getDrops</code></li>
+<li><code>getFluidState</code></li>
+<li><code>getInteractionShape</code></li>
+<li><code>getLightBlock</code></li>
+<li><code>getLootTable</code></li>
+<li><code>getMaxHorizontalOffset</code></li>
+<li><code>getMaxVerticalOffset</code></li>
+<li><code>getMenuProvider</code></li>
+<li><code>getOcclusionShape</code></li>
+<li><code>getOffsetType</code></li>
+<li><code>getPistonPushReaction</code></li>
+<li><code>getRenderShape</code></li>
+<li><code>getSeed</code></li>
+<li><code>getShadeBrightness</code></li>
+<li><code>getShape</code></li>
+<li><code>getSignal</code></li>
+<li><code>getVisualShape</code></li>
+<li><code>hasAnalogOutputSignal</code></li>
+<li><code>isAir</code></li>
+<li><code>isCollsionShapeFullBlock</code></li>
+<li><code>isPathfindable</code></li>
+<li><code>isSignalSource</code></li>
+<li><code>mirror</code></li>
+<li><code>neighborChanged</code></li>
+<li><code>onPlace</code></li>
+<li><code>onProjectileHit</code></li>
+<li><code>onRemove</code></li>
+<li><code>randomTick</code></li>
+<li><code>rotate</code></li>
+<li><code>skipRendering</code></li>
+<li><code>spawnAfterBreak</code></li>
+<li><code>tick</code></li>
+<li><code>triggerEvent</code></li>
+<li><code>updateIndirectNeighbourShapes</code></li>
+<li><code>updateShape</code></li>
+<li><code>use</code></li>
+<li><code>useShapeForLightOcclusion</code></li>
 </ul>
 
     </div>
@@ -439,6 +447,13 @@
     $(function () { $('#article').click(function (e) { if (e.target.tagName == "IMG") { if ($('#nonediv').length == 0) { let MImg = `<div id='noneimg'><img src='${e.target.currentSrc}'></div>`; let MDiv = "<div id='nonediv' style='cursor: pointer;display: none; position: fixed;left: 0;top: 0; right: 0;bottom: 0;background-color: #333;opacity:0.5;z-index: 108;'></div>"; $('#article').append(MDiv); $('#article').append(MImg); $("#nonediv").fadeIn("slow"); $("#noneimg img").fadeIn("slow") } } else { if ($('#nonediv').length !== 0) { $("#noneimg ").fadeOut("slow"); $("#nonediv").fadeOut("slow"); setTimeout(function () { $('#nonediv').remove(); $('#noneimg').remove() }, 500) } } }); $('.article-content').addClass('content-move') });
 </script>
 <div class="Last-Next">
+    
+    <a href="/2022/02/21/%E6%88%91%E7%9A%84%E4%B8%96%E7%95%8C1-18mod%E5%BC%80%E5%8F%91%E5%AD%A6%E4%B9%A0-7-%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/">
+        <div class="last">
+            <span>上一篇</span>
+            <p>我的世界1.18mod开发学习(7)-数据存储</p>
+        </div>
+    </a>
     
 
     
