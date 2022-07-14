@@ -10,7 +10,7 @@
 <link rel="shortcut icon" type="image/x-icon" href="/image/favicon.ico">
 
 
-<meta name="keywords" content="RISCV,特权模式,中断,CSR,寄存器,">
+<meta name="keywords" content="RISCV,特权模式,中断,CSR寄存器,">
 <meta name="description" content="">
 
 
@@ -264,9 +264,7 @@
             
             <li><a href="/tags/中断">中断</a></li>
             
-            <li><a href="/tags/CSR">CSR</a></li>
-            
-            <li><a href="/tags/寄存器">寄存器</a></li>
+            <li><a href="/tags/CSR寄存器">CSR寄存器</a></li>
             
             
         </ul>
@@ -465,6 +463,13 @@
     $(function () { $('#article').click(function (e) { if (e.target.tagName == "IMG") { if ($('#nonediv').length == 0) { let MImg = `<div id='noneimg'><img src='${e.target.currentSrc}'></div>`; let MDiv = "<div id='nonediv' style='cursor: pointer;display: none; position: fixed;left: 0;top: 0; right: 0;bottom: 0;background-color: #333;opacity:0.5;z-index: 108;'></div>"; $('#article').append(MDiv); $('#article').append(MImg); $("#nonediv").fadeIn("slow"); $("#noneimg img").fadeIn("slow") } } else { if ($('#nonediv').length !== 0) { $("#noneimg ").fadeOut("slow"); $("#nonediv").fadeOut("slow"); setTimeout(function () { $('#nonediv').remove(); $('#noneimg').remove() }, 500) } } }); $('.article-content').addClass('content-move') });
 </script>
 <div class="Last-Next">
+    
+    <a href="/2022/07/14/RISCV-CSR%E5%AF%84%E5%AD%98%E5%99%A8%E8%AF%A6%E8%A7%A3/">
+        <div class="last">
+            <span>上一篇</span>
+            <p>RISCV-CSR寄存器详解</p>
+        </div>
+    </a>
     
 
     
