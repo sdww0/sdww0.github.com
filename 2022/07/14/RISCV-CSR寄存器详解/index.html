@@ -284,7 +284,7 @@
 </div>
 <div class="article-content">
     <div id="article" class="content">
-        <p><strong>在这里会挑几个感觉常用的讲, S-mode的一些寄存器功能与M-mode中差不多名字的寄存器功能类似,因此只截了图</strong></p>
+        <p><strong>随着接触越来越多的寄存器, 这篇文章在未来会更新, S-mode的一些寄存器功能与M-mode中差不多名字的寄存器功能类似, 因此只截了图, 网站好像不支持markdown的目录结构,因此要找对应的寄存器说明可以直接网页Ctrl+F查找名字就好了</strong></p>
 <h2 id="名词"><a href="#名词" class="headerlink" title="名词"></a>名词</h2><ul>
 <li><strong>WARL</strong>: (Write any value, read legal value) (写任何值,读合法值)</li>
 <li><strong>WLRL</strong>: (Write&#x2F;read only legal value) (读写合法值)</li>
@@ -526,6 +526,105 @@
 
 <img src="image-20220714195327654.png" alt="image-20220714195327654" style="zoom:67%;" />
 
+<h3 id="Machine-Trap-Delegation-Registers-medeleg-and-mideleg"><a href="#Machine-Trap-Delegation-Registers-medeleg-and-mideleg" class="headerlink" title="Machine Trap Delegation Registers (medeleg and mideleg)"></a>Machine Trap Delegation Registers (medeleg and mideleg)</h3><ul>
+<li>medeleg全称: Machine Exception DELEGate</li>
+<li>mideleg全称: Machine Interrupt DELEGate</li>
+</ul>
+<p>通过全称可以看到,一个是用于异常的代理,一个是用于中断的代理,在手册中它们的具体值分别是</p>
+<img src="image-20220715213727761.png" alt="image-20220715213727761" style="zoom:67%;" />
+
+<img src="image-20220715213736630.png" alt="image-20220715213736630" style="zoom: 67%;" />
+
+<p>具体使用规则很简单, 设置一些特定的中断&#x2F;异常对应的位, 之后如果在S-mode或者U-mode发生的中断&#x2F;异常会进入到S-mode的trap handler, 如果trap代理到了S-mode, 会有以下寄存器操作:</p>
+<ul>
+<li>scause会写入发生trap的类型</li>
+<li>sepc会写入发生trap的那个指令虚拟地址</li>
+<li>stval会写入特定的数据</li>
+<li>mstatus中的SPP位会写入trap前的特权模式</li>
+<li>mstatus中的SPIE会写入trap前的SIE位的值,用于返回时恢复</li>
+<li>mstatus中的SIE会置0</li>
+<li>mcause,mepc,mtval以及mstatus中的MPP,MPIE不会写入东西</li>
+</ul>
+<p>具体哪一位对应哪一个中断&#x2F;异常,可见下面mcause中的表格, Interrupt对应mideleg, Exception对应medeleg, code对应哪一位,比如在 Interrupt中的Supervisor software interrupt, 在 mideleg对应的是从右向左第二位(从0开始)</p>
+<h3 id="Machine-Interrupt-Registers-mip-and-mie"><a href="#Machine-Interrupt-Registers-mip-and-mie" class="headerlink" title="Machine Interrupt Registers (mip and mie)"></a>Machine Interrupt Registers (mip and mie)</h3><p>mie,mip分别是MXLEN长度的寄存器:</p>
+<img src="image-20220715221103066.png" alt="image-20220715221103066" style="zoom:67%;" />
+
+<p>先来说说一个中断想要进入M-mode需要满足什么条件:</p>
+<ol>
+<li>当前特权模式为M并且mstatus寄存器的MIE位被设置, 或者当前特权模式等级低于M-mode</li>
+<li>mip和mie对应的bit同时被设置</li>
+<li>如果mideleg存在,则对应的bit不能被设置</li>
+</ol>
+<p>mip与mie每一位对应的中断类型:</p>
+<img src="image-20220715221113706.png" alt="image-20220715221113706" style="zoom:67%;" />
+
+<p>​    寄存器mip中的每位可以是可写的，也可以是只读的。当mip中的第i位可写时，一个挂起的中断i可以将bit i置0。如果interrupt i可以变成挂起态，但是mip中的bit i是只读的，那么实现必须提供一些其他机制来清除挂起的中断。</p>
+<p>​    各个比特位所代表的意思:</p>
+<table>
+<thead>
+<tr>
+<th>bit名</th>
+<th>说明</th>
+<th>补充</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mip.MEIP及mie.MEIE</td>
+<td>机器级外部中断挂起和机器级外部中断启用</td>
+<td>MEIP为只读, 只能通过特定的平台终端管理器设置或清除</td>
+</tr>
+<tr>
+<td>mie.MTIP及mie.MTIE</td>
+<td>机器级时钟中断挂起和机器级时钟中断启用</td>
+<td>MTIP为只读,只能通过写入内存映射的M-mode 时钟比较寄存器(timer compare register)来清除</td>
+</tr>
+<tr>
+<td>mie.MSIP及mie.MSIE</td>
+<td>机器级软件中断挂起和机器级软件中断启用</td>
+<td>MSIP为只读,只能通过访问内存映射的控制寄存器来写入, 控制寄存器被远程harts用来提供机器级处理器间的中断, 一个hart可以相同的内存映射控制寄存器来写入他自己的MSIP bit.如果一个系统只有一个hart或者一个平台标准支持通过外部中断(MEI)来传递机器级处理期间的中断, 则 MSIP和MSIE可能都设为只读0</td>
+</tr>
+<tr>
+<td>mip.SEIP及mie.SEIE</td>
+<td>Supervisor-level 外部中断挂起和Supervisor-level 外部中断启用</td>
+<td>SEIP是可写的, 可能会被M-mode软件去通知S-mode有一个外部中断正在挂起, 平台中断控制器可能也会生成Supervisor level 外部中断<br />Supervisor level外部中断是否挂起是基于这个表达式: (软件可写的SEIP bit) | (外部中断控制器信号).<br />当使用CSR指令读取mip时, SEIP bit 返回的值为:(软件可写的bit) | (外部中断控制器信号), 但是外部中断信号并不用于计算写入到SEIP寄存器的值(也就是说外部中断信号与SEIP寄存器中的值没有关联, 但读取的时候会加上这个信号, 读取的不一定是实际在寄存器中的)<br />能通过用 CSRRS 或者 CSRRC来读取更改或者写入实际SEIP的值</td>
+</tr>
+<tr>
+<td>mip.STIP及mie.STIE</td>
+<td>Supervisor-level 时钟中断挂起和Supervisor-level 时钟中断启用</td>
+<td>STIP是可写的，可通过M-mode的软件传递timer中断到S-mode</td>
+</tr>
+<tr>
+<td>mip.SSIP及mie.SSIE</td>
+<td>Supervisor-level 软件中断挂起和Supervisor-level 软件中断启用</td>
+<td>SSIP是可写的，可以通过特定的平台中断控制器设置为1</td>
+</tr>
+</tbody></table>
+<h3 id="Hardware-Performance-Monitor-HPM"><a href="#Hardware-Performance-Monitor-HPM" class="headerlink" title="Hardware Performance Monitor (HPM)"></a>Hardware Performance Monitor (HPM)</h3><p>​    M-mode包含一系列基础的硬件性能监控设备, mcycle CSR寄存器记录着一个hart运行时他所在的处理器核执行的clock cycles. minstret CSR寄存器记录一个hart已经执行的指令数量. 这两个寄存器无论是在RV32还是RV64都是64位的.</p>
+<p>​    计数寄存器在hart重置后是一个随机值, 可以被写入一个特定的值, CSR写入在写入指令结束后生效(意思应该是当前指令不计算在重置后的值). mcycle CSR可能会被多个hart共享, 因为有一些核会有超线程技术, 比如一核二线程, 这种时候平台需要提供一个机制去定义哪些harts共享一个mcycle CSR.</p>
+<p>​    硬件性能监控器包含29个额外的64位事件计数器, mhpmcounter3-mhpmcounter31. 还存在一系列用于选择事件的 CSR寄存器, mhpmevent3-mhpmevent31, 他们都是MXLEN bit大小的WARL寄存器, 用于控制拿一些事件会导致计数器增长, 这些事件的内容由平台定义, 但是event 0 定义为 “没有事件”. 所有的计数器都要被实现, 但存在一种合法的实现, 就是将counter和对应的event select 设置为只读0</p>
+<img src="image-20220715234229952.png" alt="image-20220715234229952" style="zoom:80%;" />
+
+<p>​    如果MXLEN&#x3D;32, 直接读寄存器会读取到0-31位的数据, 在对应的寄存器后面加个h即可读取32-63位的数据.</p>
+<blockquote>
+<p><strong>内存映射寄存器 - Machine Time Registers (mtime 及 mtimecmp)</strong></p>
+<p>该寄存器记录的是现实生活中时间, 暴露为内存映射 M-mode 读写寄存器 mtime, mtime需要以固定的频率递进, 平台需要提供一个方法去定义一个mtime tick的周期, 如果mtime寄存器溢出,则会重置为0(原话:The mtime register will wrap around if the count overflows.)</p>
+<p>mtime在RV32和RV64中都以64位的精度存在, 平台提供了一个64位大小的内存映射M-mode 时间对比寄存器(mtimecmp). 如果mtime的值大于mtimecmp, 则一个machine timer interrupt会挂起(寄存器的值被设定为无符号整型). 中断会一直存在知道mtimecmp大于mtime. 这个中断是否发生同时也要看mie CSR寄存器中的MTIE bit是否设置为1.</p>
+<img src="image-20220716000544831.png" alt="image-20220716000544831" style="zoom:80%;" />
+</blockquote>
+<h3 id="Machine-Counter-Enable-Register-mcounteren"><a href="#Machine-Counter-Enable-Register-mcounteren" class="headerlink" title="Machine Counter-Enable Register (mcounteren)"></a>Machine Counter-Enable Register (mcounteren)</h3><p>​    这个寄存器主要是保护上面说的HPM不被S-mode以及U-mode访问, 寄存器的结构如下:</p>
+<img src="image-20220715234554087.png" alt="image-20220715234554087" style="zoom:80%;" />
+
+<p>​    如果HPM对应的bit为1, 则代表mcycle, minstret…可以被S-mode, U-mode访问, 如果为0则代表不能被访问, 如果S-mode, U-mode访问了, 则会将引发非法指令异常</p>
+<h3 id="Machine-Counter-Inhibit-CSR-mcountinhibit"><a href="#Machine-Counter-Inhibit-CSR-mcountinhibit" class="headerlink" title="Machine Counter-Inhibit CSR (mcountinhibit)"></a>Machine Counter-Inhibit CSR (mcountinhibit)</h3><p>​    这个寄存器控制HPM的增长, 结构和mcounteren类似(注意TM位没有了):</p>
+<img src="image-20220715234913533.png" alt="image-20220715234913533" style="zoom:80%;" />
+
+<ul>
+<li>​    如果对应的位为0, 则代表对应的计数器可以增长, 如果为1则代表对应的计数器不会增长, 这个寄存器不会影响HPM的可访问性.</li>
+<li>mcycle CSR可以在多个hart间共享. 同理, CY字段也应该在这些hart之间共享.</li>
+<li>如果未实现该寄存器, 则功能与全为0相同</li>
+<li>如果不需要cycle和instret计数器时, 最好可以将他们关掉以减少能量消耗</li>
+<li>由于时间计数器在多核是共享的, 因此它不能被此寄存器影响.</li>
+</ul>
 <h3 id="Machine-Scratch-Register-mscratch"><a href="#Machine-Scratch-Register-mscratch" class="headerlink" title="Machine Scratch Register (mscratch)"></a>Machine Scratch Register (mscratch)</h3><p>用于保存M-mode的hart本地上下文空间的指针, 在进入M-mode trap handler时与user寄存器交换</p>
 <img src="image-20220714195753070.png" alt="image-20220714195753070" style="zoom:67%;" />
 
@@ -550,6 +649,13 @@
 <p>没怎么细看,但乍一看感觉这里面的每个bit mstatus都有..就先不记录了吧</p>
 <h3 id="Supervisor-Trap-Vector-Base-Address-Register-stvec"><a href="#Supervisor-Trap-Vector-Base-Address-Register-stvec" class="headerlink" title="Supervisor Trap Vector Base Address Register (stvec)"></a>Supervisor Trap Vector Base Address Register (stvec)</h3><img src="image-20220714201941271.png" alt="image-20220714201941271" style="zoom:67%;" />
 
+<h3 id="Supervisor-Interrupt-Registers-sip-and-sie"><a href="#Supervisor-Interrupt-Registers-sip-and-sie" class="headerlink" title="Supervisor Interrupt Registers (sip and sie)"></a>Supervisor Interrupt Registers (sip and sie)</h3><img src="image-20220716000826835.png" alt="image-20220716000826835" style="zoom: 67%;" />
+
+<img src="image-20220716001105713.png" alt="image-20220716001105713" style="zoom:67%;" />
+
+<h3 id="Counter-Enable-Register-scounteren"><a href="#Counter-Enable-Register-scounteren" class="headerlink" title="Counter-Enable Register (scounteren)"></a>Counter-Enable Register (scounteren)</h3><img src="image-20220716000922781.png" alt="image-20220716000922781" style="zoom:67%;" />
+
+<p>​    与mcounteren类似,这个寄存器控制U-mode对HPM的访问控制, 如果为0, 则U-mode访问会触发非法指令异常,如果为1则不会.</p>
 <h3 id="Supervisor-Scratch-Register-sscratch"><a href="#Supervisor-Scratch-Register-sscratch" class="headerlink" title="Supervisor Scratch Register (sscratch)"></a>Supervisor Scratch Register (sscratch)</h3><img src="image-20220714202013751.png" alt="image-20220714202013751" style="zoom:67%;" />
 
 <h3 id="Supervisor-Exception-Program-Counter-sepc"><a href="#Supervisor-Exception-Program-Counter-sepc" class="headerlink" title="Supervisor Exception Program Counter (sepc)"></a>Supervisor Exception Program Counter (sepc)</h3><img src="image-20220714202142616.png" alt="image-20220714202142616" style="zoom:67%;" />
