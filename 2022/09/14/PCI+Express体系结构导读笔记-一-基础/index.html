@@ -1,0 +1,262 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>PCI+Express体系结构导读笔记(一)-基础介绍 | sdww0的博客</title><meta name="author" content="sdww0"><meta name="copyright" content="sdww0"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="备注只注重架构以及软件的实现, 其余内部的具体信号还有其他的引脚不会记录 PCI的结构 如图所示, PCI总线的相关模块包括:  Host主桥 PCI总线 PCI桥 PCI设备  整个PCI架构以一个树状结构呈现, Host主桥用于连接CPU与PCI设备, PCI桥用于拓展PCI设备(树中的非叶子节点), PCI总线代表树中的枝, PCI设备则代表树中的所有节点(下面的定义中, PCI桥也是PCI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PCI+Express体系结构导读笔记(一)-基础介绍">
+<meta property="og:url" content="http://sdww0.github.io/2022/09/14/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="sdww0的博客">
+<meta property="og:description" content="备注只注重架构以及软件的实现, 其余内部的具体信号还有其他的引脚不会记录 PCI的结构 如图所示, PCI总线的相关模块包括:  Host主桥 PCI总线 PCI桥 PCI设备  整个PCI架构以一个树状结构呈现, Host主桥用于连接CPU与PCI设备, PCI桥用于拓展PCI设备(树中的非叶子节点), PCI总线代表树中的枝, PCI设备则代表树中的所有节点(下面的定义中, PCI桥也是PCI">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.wallpaperscraft.com/image/single/ruins_man_loneliness_124279_1280x720.jpg">
+<meta property="article:published_time" content="2022-09-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-11-13T18:05:56.125Z">
+<meta property="article:author" content="sdww0">
+<meta property="article:tag" content="PCI">
+<meta property="article:tag" content="PCIe">
+<meta property="article:tag" content="学习笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.wallpaperscraft.com/image/single/ruins_man_loneliness_124279_1280x720.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://sdww0.github.io/2022/09/14/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="ea8954a51e7e3e9874e27e687c2cb93e"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":365,"position":"top","messagePrev":"已经","messageNext":"天没有更新了，文章内容可能过期"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'PCI+Express体系结构导读笔记(一)-基础介绍',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-11-14 02:05:56'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211141106503.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://images.wallpaperscraft.com/image/single/ruins_man_loneliness_124279_1280x720.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">sdww0的博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">PCI+Express体系结构导读笔记(一)-基础介绍</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-09-13T16:00:00.000Z" title="发表于 2022-09-14 00:00:00">2022-09-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-11-13T18:05:56.125Z" title="更新于 2022-11-14 02:05:56">2022-11-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/PCI-Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0/">PCI+Express体系结构导读笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="PCI+Express体系结构导读笔记(一)-基础介绍"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2022/09/14/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count" data-xid="/2022/09/14/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" itemprop="commentCount"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h1><p>只注重架构以及软件的实现, 其余内部的具体信号还有其他的引脚不会记录</p>
+<h1 id="PCI的结构"><a href="#PCI的结构" class="headerlink" title="PCI的结构"></a>PCI的结构</h1><p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140144808.png" alt="image-20220914095228114"></p>
+<p>如图所示, PCI总线的相关模块包括:</p>
+<ul>
+<li>Host主桥</li>
+<li>PCI总线</li>
+<li>PCI桥</li>
+<li>PCI设备</li>
+</ul>
+<p>整个PCI架构以一个树状结构呈现, Host主桥用于连接CPU与PCI设备, PCI桥用于拓展PCI设备(树中的非叶子节点), PCI总线代表树中的枝, PCI设备则代表树中的所有节点(下面的定义中, PCI桥也是PCI设备的一部分,只是他是用于拓展其他PCI设备用的).</p>
+<h2 id="Host主桥"><a href="#Host主桥" class="headerlink" title="Host主桥"></a>Host主桥</h2><p>Host主桥的主要功能有:</p>
+<ul>
+<li>隔离处理器系统的存储器域与PCI总线域, 一个Host主桥对应一个PCI总线域</li>
+<li>管理PCI总线域</li>
+<li>完成处理器与PCI设备之间的数据交换</li>
+</ul>
+<h2 id="PCI总线"><a href="#PCI总线" class="headerlink" title="PCI总线"></a>PCI总线</h2><p>PCI总线由HOST主桥以及PCI桥进行管理, 用来连接各种设备</p>
+<h2 id="PCI设备"><a href="#PCI设备" class="headerlink" title="PCI设备"></a>PCI设备</h2><p>PCI总线中一共有三种设备:</p>
+<ul>
+<li>PCI主设备, 可以通过总线仲裁获得PCI总线的使用权, 主动发出请求</li>
+<li>PCI从设备, 只能被动接受来自HOST主桥或者其他PCI设备的读写请求</li>
+<li>桥设备, 用于管理下游的PCI总线, 即为PCI桥</li>
+</ul>
+<p>PCI总线规范中将PCI主从设备统称为PCI Agent设备, 比如常见的网卡, 显卡, 声卡.</p>
+<h1 id="PCI设备配置"><a href="#PCI设备配置" class="headerlink" title="PCI设备配置"></a>PCI设备配置</h1><h2 id="PCI设备配置空间"><a href="#PCI设备配置空间" class="headerlink" title="PCI设备配置空间"></a>PCI设备配置空间</h2><p>PCI设备头部的64个字节为固定的, 所有PCI设备必须支持, 具体定义如下图:</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140144060.png" alt="PCI设备配置空间"></p>
+<ol>
+<li>Device ID和 Vendor ID: Vendor ID代表PCI设备的生产厂商, Device ID代表厂商生产的具体设备</li>
+<li>Status: 大多数为只读, 保存PCI设备状态</li>
+<li>Command: PCI设备的命令寄存器, 初始化设为0</li>
+<li>Class Code和 Revision ID: 只读寄存器, 其中后者记录的是PCI设备的版本号, 可以认为是Device ID的拓展, Class Code貌似在其他情况下也是用于区分唯一设备的</li>
+<li>Header Type: 只读, 由8位组成:<ul>
+<li>第7位代表PCI设备为多功能设备, 0为单功能设备</li>
+<li>第6~0为标识当前配置空间的类型, 0代表为PCI Agent设备的配置空间, 1代表PCI桥的配置空间(两者不太一样), 2代表Cardbus桥片的配置空间</li>
+</ul>
+</li>
+<li>Latency Timer: 用于控制PCI设备占用PCI总线的时间, 当PCI设备获得总线使用权后, 这个寄存器会递减, 归零后取消使用权</li>
+<li>Cache Line Size: 记录处理器使用的Cache行长. 在 PCI 总线中和 Cache 相关的总线事务，如 存储器写并无效和 Cache 多行读等总线事务需要使用这个寄存器, 由软件写入, 硬件逻辑使用</li>
+<li>Subsystem ID 和 Subsystem Vendor ID: 与Device ID和Vendor ID类似, 记录PCI设备的生产厂商和设备名称</li>
+<li>Expansion ROM base address: 用于存储在运行操作系统前, 进行基本初始化的程序代码基地址(存储在ROM中)</li>
+<li>Capabilities Pointer: PCI可选, PCIe必须支持, 用于存储Capabilities寄存器组的基地址, PCI设备使用Capabilities 寄存器组存放一些与PCI设备相关的扩展配置信息</li>
+<li>Interrupt Line(右下角, 被logo挡住了): 软件对PCI设备配置时写入, 记录当前PCI设备使用的中断向量号, 设备驱动程序可以通过该寄存器注册服务到操作系统中</li>
+<li>Interrupt Pin: 保存PCI设备使用的中断引脚, 1-4 分别使用 INTA#, INTB#, INTC#, INTD#引脚, 不使用则设为0</li>
+<li>Base Address Register(BAR) 0~5: 保存PCI设备使用的地址空间基地址, 保存的是设备在<strong>PCI总线域</strong>中的地址, PCI设备复位后, 每个PCI设备在BAR中描述自己需要占用多少地址空间, 这段空间是IO空间还是存储器空间, 软件之后可以通过向VAR寄存器写入全1, 读取该寄存器, 清空特殊编码值, 取反并加1得到需要占用的地址空间大小.</li>
+<li>Capabilities Pointer: 如果status中启用了capabilities, 代表这个设备使用了64~256字节之间的拓展配置空间, pointer指向的是下一个capability的偏移(在这个地址空间内)</li>
+</ol>
+<p>以下图片分别为Memory和IO下的BAR寄存器结构:</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140144520.jpeg" alt="Memory"></p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140145621.png" alt="IO"></p>
+<p>status各字段含义:</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140145692.png" alt="img"></p>
+<h2 id="PCI桥配置空间"><a href="#PCI桥配置空间" class="headerlink" title="PCI桥配置空间"></a>PCI桥配置空间</h2><p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140145768.jpeg" alt="img"></p>
+<p>与PCI设备配置空间差不多, 对于BAR0<del>1, 这两组的含义与上面的一致, 只是这两组寄存器为可选寄存器, 大多数PCI桥不存在私有寄存器, 操作系统也不需要为PCI桥提供专门的驱动程序, 如果PCI桥不存在私有空间, 则BAR0</del>1被设为0, 其他特有寄存器如下:</p>
+<ul>
+<li>Subordinate Bus Number、Secondary Bus Number和Primary Bus Number: 第一个代表桥下面管理的编号最大的PCI总线, 第二个代表最小的PCI总线号, 最后一个代表PCI桥上游的总线号, 一个PCI桥能管理的PCI总线号范围即为Secondary Bus Number~Subordinate Bus Number, 他们三者初始化时均为0, 可提供过这个来判断是否被配置过</li>
+<li>I&#x2F;O Limit和I&#x2F;O Base: 用于存放PCI子树中所有设备使用的IO地址空间集合的基地址(后者)和大小(前者)</li>
+<li>Memory Limit和Memory Base: 用于存放PCI子树中所有设备使用的存储空间集合的基地址(后者)和大小(前者)</li>
+<li>Prefetchable Memory Limit和Prefetchable Memory Base: 如果管理的PCI设备支持预读, 则需要从PCI桥的可预读空间中获取地址空间. 这两个寄存器分别存放PCI设备使用的可预读存储器空间的基地址和大小.</li>
+</ul>
+<h2 id="PCI总线树初始化"><a href="#PCI总线树初始化" class="headerlink" title="PCI总线树初始化"></a>PCI总线树初始化</h2><p>PCI总线树中, 有多少个PCI桥(包括HOST主桥), 就有多少条总线. 软件遍历时需要对PCI总线进行编号, 初始化PCI桥的Primary、Secondary和Subordinate Bus Number寄存器, 下图是DFS后, 总线号分配情况以及桥上总线相关寄存器的初始化情况:</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140145153.png" alt="img"></p>
+<h2 id="配置PCI设备"><a href="#配置PCI设备" class="headerlink" title="配置PCI设备"></a>配置PCI设备</h2><p>x86定义了两个IO端口寄存器, 分别为CONFIG_ADDRESS和CONFIG_DATA寄存器, 地址分别为0xCF8和0xCFC, 利用这两个IO端口即可访问PCI设备的配置空间, 其中CONFIG_ADDRESS寄存器存放PCI设备的ID号, CONFIG_DATA寄存器存放配置的读写数据. CONFIG_ADDRESS寄存器结构如下:</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140145951.png" alt="img"></p>
+<ul>
+<li>Enable bit: 该位为1时, 对CONFIG_DATA寄存器进行读写会引发PCI总线的配置周期</li>
+<li>Bus Number: PCI设备的总线号</li>
+<li>Device Number: PCI设备的设备号</li>
+<li>Function Number: PCI设备的功能号</li>
+<li>Register Number: PCI设备的寄存器号</li>
+</ul>
+<p>当CONFIG_ADDRESS中的Enable为1时, 对CONFIG_DATA寄存器进行的IO读写访问会由Host主桥转化为PCI配置读写总线事务, 然后发送到PCI总线上, 之后会根据CONFIG_ADDRESS中的总线号, 设备号, 功能号, 寄存器号完成对特定设备的指定寄存器读写</p>
+<blockquote>
+<p>通过总线号, 设备号, 功能号能找到一个特定的PCI设备, 相当于一个特定PCI设备的身份证号, 寄存器号则代表配置空间寄存器偏移量, 比如0就代表不偏移, 4就代表偏移4bytes</p>
+</blockquote>
+<p>PCIe 扩展了配置空间的大小, 最大到4K, 具体如下:</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140145672.png" alt="img"></p>
+<ul>
+<li>0~3Fh位基本配置空间大小, 就是上面说的64字节</li>
+<li>PCI Express Capability Structure ，PCI可选支持，PCIe支持</li>
+<li>PCI Express Extended Capability Structure，PCI不支持，PCIe支持</li>
+</ul>
+<p>为了访问&gt;256字节的空间, 支持通过MMIO的方式访问配置空间, 但为了兼容性, 保留了IO访问方式, 最后附上PCIe设备的空间:</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140145914.jpeg" alt="img"></p>
+<h2 id="PCI设备读写"><a href="#PCI设备读写" class="headerlink" title="PCI设备读写"></a>PCI设备读写</h2><p>配置好PCI设备的BAR寄存器后, 即可通过BAR空间地址对PCI设备进行读写操作, 具体如下:</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140145083.png" alt="img"></p>
+<h1 id="参考文档或链接"><a href="#参考文档或链接" class="headerlink" title="参考文档或链接"></a>参考文档或链接</h1><ol>
+<li>PCI Express体系结构导读</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/26244141">深入PCI与PCIe之二：软件篇</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/hx_op/article/details/104029386">PCI入门</a></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://sdww0.github.io">sdww0</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://sdww0.github.io/2022/09/14/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/">http://sdww0.github.io/2022/09/14/PCI+Express体系结构导读笔记-一-基础/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://sdww0.github.io" target="_blank">sdww0的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/PCI/">PCI</a><a class="post-meta__tags" href="/tags/PCIe/">PCIe</a><a class="post-meta__tags" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a></div><div class="post_share"><div class="social-share" data-image="https://images.wallpaperscraft.com/image/single/ruins_man_loneliness_124279_1280x720.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/09/16/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-MSI%E5%8F%8AMSI-X/"><img class="prev-cover" src="https://images.wallpaperscraft.com/image/single/japan_shirakawa_houses_mountains_trees_112963_1280x720.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">PCI+Express体系结构导读笔记(二)-MSI及MSI-X</div></div></a></div><div class="next-post pull-right"><a href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F/"><img class="next-cover" src="https://images.wallpaperscraft.com/image/single/cat_picture_window_silhouette_70090_1280x720.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Virtio文档阅读笔记(二)传输形式</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/09/16/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-MSI%E5%8F%8AMSI-X/" title="PCI+Express体系结构导读笔记(二)-MSI及MSI-X"><img class="cover" src="https://images.wallpaperscraft.com/image/single/japan_shirakawa_houses_mountains_trees_112963_1280x720.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-16</div><div class="title">PCI+Express体系结构导读笔记(二)-MSI及MSI-X</div></div></a></div><div><a href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="Virtio文档阅读笔记(一)基础设备"><img class="cover" src="https://images.wallpaperscraft.com/image/single/boat_sea_alone_121414_1280x720.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-13</div><div class="title">Virtio文档阅读笔记(一)基础设备</div></div></a></div><div><a href="/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/" title="Virtio文档阅读笔记(三)具体设备"><img class="cover" src="https://images.wallpaperscraft.com/image/single/city_night_panorama_117682_1280x720.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-17</div><div class="title">Virtio文档阅读笔记(三)具体设备</div></div></a></div><div><a href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F/" title="Virtio文档阅读笔记(二)传输形式"><img class="cover" src="https://images.wallpaperscraft.com/image/single/cat_picture_window_silhouette_70090_1280x720.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-13</div><div class="title">Virtio文档阅读笔记(二)传输形式</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211141106503.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">sdww0</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/sdww0" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:1315953661@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A4%87%E6%B3%A8"><span class="toc-number">1.</span> <span class="toc-text">备注</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PCI%E7%9A%84%E7%BB%93%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">PCI的结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Host%E4%B8%BB%E6%A1%A5"><span class="toc-number">2.1.</span> <span class="toc-text">Host主桥</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PCI%E6%80%BB%E7%BA%BF"><span class="toc-number">2.2.</span> <span class="toc-text">PCI总线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PCI%E8%AE%BE%E5%A4%87"><span class="toc-number">2.3.</span> <span class="toc-text">PCI设备</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PCI%E8%AE%BE%E5%A4%87%E9%85%8D%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text">PCI设备配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#PCI%E8%AE%BE%E5%A4%87%E9%85%8D%E7%BD%AE%E7%A9%BA%E9%97%B4"><span class="toc-number">3.1.</span> <span class="toc-text">PCI设备配置空间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PCI%E6%A1%A5%E9%85%8D%E7%BD%AE%E7%A9%BA%E9%97%B4"><span class="toc-number">3.2.</span> <span class="toc-text">PCI桥配置空间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PCI%E6%80%BB%E7%BA%BF%E6%A0%91%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">3.3.</span> <span class="toc-text">PCI总线树初始化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEPCI%E8%AE%BE%E5%A4%87"><span class="toc-number">3.4.</span> <span class="toc-text">配置PCI设备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PCI%E8%AE%BE%E5%A4%87%E8%AF%BB%E5%86%99"><span class="toc-number">3.5.</span> <span class="toc-text">PCI设备读写</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3%E6%88%96%E9%93%BE%E6%8E%A5"><span class="toc-number">4.</span> <span class="toc-text">参考文档或链接</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/" title="Virtio文档阅读笔记(三)具体设备"><img src="https://images.wallpaperscraft.com/image/single/city_night_panorama_117682_1280x720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Virtio文档阅读笔记(三)具体设备"/></a><div class="content"><a class="title" href="/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/" title="Virtio文档阅读笔记(三)具体设备">Virtio文档阅读笔记(三)具体设备</a><time datetime="2022-09-16T16:00:00.000Z" title="发表于 2022-09-17 00:00:00">2022-09-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/16/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-MSI%E5%8F%8AMSI-X/" title="PCI+Express体系结构导读笔记(二)-MSI及MSI-X"><img src="https://images.wallpaperscraft.com/image/single/japan_shirakawa_houses_mountains_trees_112963_1280x720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PCI+Express体系结构导读笔记(二)-MSI及MSI-X"/></a><div class="content"><a class="title" href="/2022/09/16/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-MSI%E5%8F%8AMSI-X/" title="PCI+Express体系结构导读笔记(二)-MSI及MSI-X">PCI+Express体系结构导读笔记(二)-MSI及MSI-X</a><time datetime="2022-09-15T16:00:00.000Z" title="发表于 2022-09-16 00:00:00">2022-09-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/14/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="PCI+Express体系结构导读笔记(一)-基础介绍"><img src="https://images.wallpaperscraft.com/image/single/ruins_man_loneliness_124279_1280x720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PCI+Express体系结构导读笔记(一)-基础介绍"/></a><div class="content"><a class="title" href="/2022/09/14/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="PCI+Express体系结构导读笔记(一)-基础介绍">PCI+Express体系结构导读笔记(一)-基础介绍</a><time datetime="2022-09-13T16:00:00.000Z" title="发表于 2022-09-14 00:00:00">2022-09-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F/" title="Virtio文档阅读笔记(二)传输形式"><img src="https://images.wallpaperscraft.com/image/single/cat_picture_window_silhouette_70090_1280x720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Virtio文档阅读笔记(二)传输形式"/></a><div class="content"><a class="title" href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F/" title="Virtio文档阅读笔记(二)传输形式">Virtio文档阅读笔记(二)传输形式</a><time datetime="2022-09-13T04:00:00.000Z" title="发表于 2022-09-13 12:00:00">2022-09-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="Virtio文档阅读笔记(一)基础设备"><img src="https://images.wallpaperscraft.com/image/single/boat_sea_alone_121414_1280x720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Virtio文档阅读笔记(一)基础设备"/></a><div class="content"><a class="title" href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="Virtio文档阅读笔记(一)基础设备">Virtio文档阅读笔记(一)基础设备</a><time datetime="2022-09-12T16:00:00.000Z" title="发表于 2022-09-13 00:00:00">2022-09-13</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By sdww0</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: '5RCHWwVxCZHeiCEhpDBFYAqJ-gzGzoHsz',
+      appKey: 'AZzJhPWPkPRIA2zh2diY9zTR',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !false) {
+  if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Virtio文档阅读笔记(三)具体设备 | sdww0的博客</title><meta name="author" content="sdww0"><meta name="copyright" content="sdww0"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="以下设备的顺序与文档顺序不太一样, 或者不全, 日后会补, 遗留的特征等不会写上来 块设备什么是块设备在文档中的定义如下: Virtio块设备是一个简单的虚拟块设备, 比如磁盘等, 读取和写入请求被放入在了队列中, 并由设备处理(可能不是顺序处理), 块设备的Device ID为2 块设备的特征bits   bit 特证名 解释    1 VIRTIO_BLK_F_SIZE_MAX 最大的任何se">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Virtio文档阅读笔记(三)具体设备">
+<meta property="og:url" content="http://sdww0.github.io/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/index.html">
+<meta property="og:site_name" content="sdww0的博客">
+<meta property="og:description" content="以下设备的顺序与文档顺序不太一样, 或者不全, 日后会补, 遗留的特征等不会写上来 块设备什么是块设备在文档中的定义如下: Virtio块设备是一个简单的虚拟块设备, 比如磁盘等, 读取和写入请求被放入在了队列中, 并由设备处理(可能不是顺序处理), 块设备的Device ID为2 块设备的特征bits   bit 特证名 解释    1 VIRTIO_BLK_F_SIZE_MAX 最大的任何se">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.wallpaperscraft.com/image/single/city_night_panorama_117682_1280x720.jpg">
+<meta property="article:published_time" content="2022-09-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-11-13T18:06:10.864Z">
+<meta property="article:author" content="sdww0">
+<meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="Virtio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.wallpaperscraft.com/image/single/city_night_panorama_117682_1280x720.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://sdww0.github.io/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="ea8954a51e7e3e9874e27e687c2cb93e"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: {"limitDay":365,"position":"top","messagePrev":"已经","messageNext":"天没有更新了，文章内容可能过期"},
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Virtio文档阅读笔记(三)具体设备',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-11-14 02:06:10'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211141106503.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://images.wallpaperscraft.com/image/single/city_night_panorama_117682_1280x720.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">sdww0的博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Virtio文档阅读笔记(三)具体设备</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-09-16T16:00:00.000Z" title="发表于 2022-09-17 00:00:00">2022-09-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-11-13T18:06:10.864Z" title="更新于 2022-11-14 02:06:10">2022-11-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">Virtio文档阅读笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">983</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Virtio文档阅读笔记(三)具体设备"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/#post-comment" itemprop="discussionUrl"><span class="valine-comment-count" data-xid="/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/" itemprop="commentCount"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>以下设备的顺序与文档顺序不太一样, 或者不全, 日后会补, 遗留的特征等不会写上来</p>
+<h1 id="块设备"><a href="#块设备" class="headerlink" title="块设备"></a>块设备</h1><h2 id="什么是块设备"><a href="#什么是块设备" class="headerlink" title="什么是块设备"></a>什么是块设备</h2><p>在文档中的定义如下: Virtio块设备是一个简单的虚拟块设备, 比如磁盘等, 读取和写入请求被放入在了队列中, 并由设备处理(可能不是顺序处理), 块设备的Device ID为2</p>
+<h2 id="块设备的特征bits"><a href="#块设备的特征bits" class="headerlink" title="块设备的特征bits"></a>块设备的特征bits</h2><table>
+<thead>
+<tr>
+<th>bit</th>
+<th>特证名</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>VIRTIO_BLK_F_SIZE_MAX</td>
+<td>最大的任何segment的大小放在了<code>size_max</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>VIRTIO_BLK_F_SEG_MAX</td>
+<td>一个request的最大数量segment放在了<code>seg_max</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>VIRTIO_BLK_F_GEOMETRY</td>
+<td>Disk-style geometry放在了<code>geometry</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>VIRTIO_BLK_F_RO</td>
+<td>设备是只读</td>
+</tr>
+<tr>
+<td>6</td>
+<td>VIRTIO_BLK_F_BLK_SIZE</td>
+<td>磁盘的块大小放在了<code>blk_size</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>VIRTIO_BLK_F_FLUSH</td>
+<td>支持缓存刷新命令</td>
+</tr>
+<tr>
+<td>10</td>
+<td>VIRTIO_BLK_F_TOPOLOGY</td>
+<td>设备利用最佳I&#x2F;O对齐(optimal I&#x2F;O alignment)导出消息</td>
+</tr>
+<tr>
+<td>11</td>
+<td>VIRTIO_BLK_F_CONFIG_WCE</td>
+<td>设备的缓存可以在writeback和writethrough模式之间循环切换</td>
+</tr>
+<tr>
+<td>13</td>
+<td>VIRTIO_BLK_F_DISCARD</td>
+<td>设备可以支持discard(丢弃)命令, 最多可以discard的sector数量放在了<code>max_discard_sectors</code>以及最多可以discard的segment数量放在了<code>max_discard_seg</code></td>
+</tr>
+<tr>
+<td>14</td>
+<td>VIRTIO_BLK_F_WRITE_ZEROES</td>
+<td>设备可以支持全写0命令, 最多可以全写0的sector数量放在了<code>max_discard_sectors</code>以及最多可以全写0的segment数量放在了<code>max_discard_seg</code></td>
+</tr>
+</tbody></table>
+<h2 id="设备配置空间"><a href="#设备配置空间" class="headerlink" title="设备配置空间"></a>设备配置空间</h2><p>这里直接放个文档中的截图, le64代表小端64bit, le32代表小端32bit, le16代表小端16bit, u8代表8bit</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140147996.png" alt="image-20220917192134946"></p>
+<p>其中<code>capacity</code>代表一个设备能支持的最大容量, 单位为512byte的扇区, 这一字段总是存在的, 其他的需要特征是否启用, 配置空间中的<code>max_discard_secotrs</code>, <code>discard_sector_alignment</code> 以及<code>max_write_zeroes_sectors</code>的单位均为512-byte.</p>
+<h2 id="设备初始化"><a href="#设备初始化" class="headerlink" title="设备初始化"></a>设备初始化</h2><ol>
+<li>设备的大小可以从<code>capacity</code>中获取到</li>
+<li>如果有VIRTIO_BLK_F_BLK_SIZE特征, 则<code>blk_size</code>可以用来决定最佳的扇区大小,这不会影响协议中其他的单位(均为512bytes).</li>
+<li>如果有VIRTIO_BLK_F_RO特征, 则所有的写操作都会失效</li>
+<li>如果有VIRTIO_BLK_F_TOPOLOGY特征, 则驱动可以使用<code>topology</code>结构体可以用来决定物理块大小和最佳的I&#x2F;O长度, 同样不会影响协议中其他的单位</li>
+<li>如果有VIRTIO_BLK_F_CONFIG_WCE特征, 则可以通过读取或者写入writeback来获取&#x2F;修改缓存模式, 0代表writethrough模式, 1代表writeback模式</li>
+<li>如果有VIRTIO_BLK_F_DISCARD特征, 则驱动可以使用<code>max_discard_sectors</code>和<code>max_discard_seg</code>来获得最大可以discard的扇区以及segments, 当基于对齐拆分请求时, 操作系统可以使用<code>discard_sector_alignment</code></li>
+<li>如果有VIRTIO_BLK_F_WRITE_ZEROES特征, 则驱动可以使用<code>max_write_zeroes_sectors</code>和<code>max_write_zeroes_seg</code>来获得最大可以写入0的扇区以及segments</li>
+</ol>
+<h3 id="驱动注意事项"><a href="#驱动注意事项" class="headerlink" title="驱动注意事项"></a>驱动注意事项</h3><ol>
+<li>驱动不能请求VIRTIO_BLK_F_FLUSH特征如果驱动不能发送VIRTIO_BLK_F_FLUSH命令</li>
+<li>如果VIRTIO_BLK_F_CONFIG_WCE以及VIRTIO_BLK_F_FLUSH都没有仲裁, 那么驱动应该假设使用了缓存使用了writethrough模式, 如果前者没有仲裁, 后者由, 则驱动应该假设缓存使用了writeback模式</li>
+<li>在FEATURES_OK之前, 驱动不能读取<code>writeback</code>字段</li>
+</ol>
+<h2 id="设备操作"><a href="#设备操作" class="headerlink" title="设备操作"></a>设备操作</h2><p>驱动使用virtqueue来请求服务, 每个请求大致结构如下:</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140147979.png" alt="image-20220917193826918"></p>
+<p>其中的type只能取下面其中之一的值:</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>名</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>VIRTIO_BLK_T_IN</td>
+<td>请求读取块设备中的数据</td>
+</tr>
+<tr>
+<td>1</td>
+<td>VIRTIO_BLK_T_OUT</td>
+<td>请求写入数据到块设备中</td>
+</tr>
+<tr>
+<td>4</td>
+<td>VIRTIO_BLK_T_FLUSH</td>
+<td>刷新指令(缓存?可能是)</td>
+</tr>
+<tr>
+<td>11</td>
+<td>VIRTIO_BLK_T_DISCARD</td>
+<td>discard指令</td>
+</tr>
+<tr>
+<td>13</td>
+<td>VIRTIO_BLK_T_WRITE_ZEROS</td>
+<td>write zeroes指令</td>
+</tr>
+</tbody></table>
+<p><code>sector</code>字段代表从哪个位置读取或者写入数据, 单位为512 bytes, 如果不是IN或者OUT则要设为0, discard或者write zeroes指令需要更多的字段, 这些字段被放在了data中, 字段的结构如下:</p>
+<p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211140147728.png" alt="image-20220917194736992"></p>
+<p>其中<code>sector</code>与IN或者OUT代表的意义一样, <code>num_sectors</code>代表操作多少个扇区, <code>unmap</code>只用在write zeros命令, 允许设备discard一个特定的区域, 前提是后续读取返回0</p>
+<p>最终读取的状态由设备写入, 他们的值以及代表的意义为:</p>
+<ul>
+<li>VIRTIO_BLK_S_OK 0: 成功</li>
+<li>VIRTIO_BLK_S_IOERR 1: 设备或者驱动出错</li>
+<li>VIRTIO_BLK_S_UNSUPP: 设备不支持的请求</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://sdww0.github.io">sdww0</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://sdww0.github.io/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/">http://sdww0.github.io/2022/09/17/virtio文档阅读笔记-三-具体设备/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://sdww0.github.io" target="_blank">sdww0的博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a><a class="post-meta__tags" href="/tags/Virtio/">Virtio</a></div><div class="post_share"><div class="social-share" data-image="https://images.wallpaperscraft.com/image/single/city_night_panorama_117682_1280x720.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/09/16/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-MSI%E5%8F%8AMSI-X/"><img class="next-cover" src="https://images.wallpaperscraft.com/image/single/japan_shirakawa_houses_mountains_trees_112963_1280x720.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">PCI+Express体系结构导读笔记(二)-MSI及MSI-X</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="Virtio文档阅读笔记(一)基础设备"><img class="cover" src="https://images.wallpaperscraft.com/image/single/boat_sea_alone_121414_1280x720.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-13</div><div class="title">Virtio文档阅读笔记(一)基础设备</div></div></a></div><div><a href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F/" title="Virtio文档阅读笔记(二)传输形式"><img class="cover" src="https://images.wallpaperscraft.com/image/single/cat_picture_window_silhouette_70090_1280x720.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-13</div><div class="title">Virtio文档阅读笔记(二)传输形式</div></div></a></div><div><a href="/2022/09/14/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="PCI+Express体系结构导读笔记(一)-基础介绍"><img class="cover" src="https://images.wallpaperscraft.com/image/single/ruins_man_loneliness_124279_1280x720.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-14</div><div class="title">PCI+Express体系结构导读笔记(一)-基础介绍</div></div></a></div><div><a href="/2022/09/16/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-MSI%E5%8F%8AMSI-X/" title="PCI+Express体系结构导读笔记(二)-MSI及MSI-X"><img class="cover" src="https://images.wallpaperscraft.com/image/single/japan_shirakawa_houses_mountains_trees_112963_1280x720.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-16</div><div class="title">PCI+Express体系结构导读笔记(二)-MSI及MSI-X</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202211141106503.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">sdww0</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/sdww0" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:1315953661@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9D%97%E8%AE%BE%E5%A4%87"><span class="toc-number">1.</span> <span class="toc-text">块设备</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%9D%97%E8%AE%BE%E5%A4%87"><span class="toc-number">1.1.</span> <span class="toc-text">什么是块设备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9D%97%E8%AE%BE%E5%A4%87%E7%9A%84%E7%89%B9%E5%BE%81bits"><span class="toc-number">1.2.</span> <span class="toc-text">块设备的特征bits</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E9%85%8D%E7%BD%AE%E7%A9%BA%E9%97%B4"><span class="toc-number">1.3.</span> <span class="toc-text">设备配置空间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">1.4.</span> <span class="toc-text">设备初始化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A9%B1%E5%8A%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">1.4.1.</span> <span class="toc-text">驱动注意事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%93%8D%E4%BD%9C"><span class="toc-number">1.5.</span> <span class="toc-text">设备操作</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/" title="Virtio文档阅读笔记(三)具体设备"><img src="https://images.wallpaperscraft.com/image/single/city_night_panorama_117682_1280x720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Virtio文档阅读笔记(三)具体设备"/></a><div class="content"><a class="title" href="/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/" title="Virtio文档阅读笔记(三)具体设备">Virtio文档阅读笔记(三)具体设备</a><time datetime="2022-09-16T16:00:00.000Z" title="发表于 2022-09-17 00:00:00">2022-09-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/16/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-MSI%E5%8F%8AMSI-X/" title="PCI+Express体系结构导读笔记(二)-MSI及MSI-X"><img src="https://images.wallpaperscraft.com/image/single/japan_shirakawa_houses_mountains_trees_112963_1280x720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PCI+Express体系结构导读笔记(二)-MSI及MSI-X"/></a><div class="content"><a class="title" href="/2022/09/16/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-MSI%E5%8F%8AMSI-X/" title="PCI+Express体系结构导读笔记(二)-MSI及MSI-X">PCI+Express体系结构导读笔记(二)-MSI及MSI-X</a><time datetime="2022-09-15T16:00:00.000Z" title="发表于 2022-09-16 00:00:00">2022-09-16</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/14/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="PCI+Express体系结构导读笔记(一)-基础介绍"><img src="https://images.wallpaperscraft.com/image/single/ruins_man_loneliness_124279_1280x720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="PCI+Express体系结构导读笔记(一)-基础介绍"/></a><div class="content"><a class="title" href="/2022/09/14/PCI+Express%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E5%AF%BC%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="PCI+Express体系结构导读笔记(一)-基础介绍">PCI+Express体系结构导读笔记(一)-基础介绍</a><time datetime="2022-09-13T16:00:00.000Z" title="发表于 2022-09-14 00:00:00">2022-09-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F/" title="Virtio文档阅读笔记(二)传输形式"><img src="https://images.wallpaperscraft.com/image/single/cat_picture_window_silhouette_70090_1280x720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Virtio文档阅读笔记(二)传输形式"/></a><div class="content"><a class="title" href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%BA%8C-%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F/" title="Virtio文档阅读笔记(二)传输形式">Virtio文档阅读笔记(二)传输形式</a><time datetime="2022-09-13T04:00:00.000Z" title="发表于 2022-09-13 12:00:00">2022-09-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="Virtio文档阅读笔记(一)基础设备"><img src="https://images.wallpaperscraft.com/image/single/boat_sea_alone_121414_1280x720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Virtio文档阅读笔记(一)基础设备"/></a><div class="content"><a class="title" href="/2022/09/13/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%80-%E5%9F%BA%E7%A1%80/" title="Virtio文档阅读笔记(一)基础设备">Virtio文档阅读笔记(一)基础设备</a><time datetime="2022-09-12T16:00:00.000Z" title="发表于 2022-09-13 00:00:00">2022-09-13</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2022 By sdww0</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"><script>function loadValine () {
+  function initValine () {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: '5RCHWwVxCZHeiCEhpDBFYAqJ-gzGzoHsz',
+      appKey: 'AZzJhPWPkPRIA2zh2diY9zTR',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  if (typeof Valine === 'function') initValine() 
+  else getScript('https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js').then(initValine)
+}
+
+if ('Valine' === 'Valine' || !false) {
+  if (false) btf.loadComment(document.getElementById('vcomment'),loadValine)
+  else setTimeout(loadValine, 0)
+} else {
+  function loadOtherComment () {
+    loadValine()
+  }
+}</script></div><script id="canvas_nest" defer="defer" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-nest.min.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
