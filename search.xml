@@ -4,6 +4,37 @@
   
     
     <entry>
+      <title>x86_64-中断，异常与syscall</title>
+      <link href="/2023/03/09/x86_64-%E4%B8%AD%E6%96%AD-%E5%BC%82%E5%B8%B8%E4%B8%8Esyscall/"/>
+      <url>/2023/03/09/x86_64-%E4%B8%AD%E6%96%AD-%E5%BC%82%E5%B8%B8%E4%B8%8Esyscall/</url>
+      
+        <content type="html"><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>本文主要介绍x86_64中的中断，异常与sys call，以及他们的基本处理。x86_64中的中断处理与syscall需要使用一系列的寄存器以及其他字段，如GDT,IDT等，这些在下文会中途介绍。</p><h2 id="中断与异常"><a href="#中断与异常" class="headerlink" title="中断与异常"></a>中断与异常</h2><p>中断和异常其实差别不是很大，一般来讲异常会触发中断，比如一个page fault异常会触发它对应的中断，因此在下面统一将异常归于中断中。中断比较好理解，CPU在执行指令的时候突然发生了一系列它不得不暂时放弃正在执行的指令，转而去执行中断处理程序来解决问题，放在现实生活中就好比在读书，打游戏时突然被喊吃饭了，先去吃饭。读书打游戏就相当于CPU正在执行的指令，去吃饭就相当于中断处理程序，不同的中断当然也需要不同的处理程序，吃饭和拿快递显然行动不一样。</p><p>那么下面说明一下中断的分类，中断主要分为外部中断和内部中断，内部中断一般指的是CPU在执行指令时出发的一些异常，或者指令自己触发的中断（int xxx）等。外部中断主要代表的是外设通过一些设备比如APIC等出发的CPU外部中断，它们会带有一个特定的vector，在这里称之为中断号，让CPU跳转到对应的中断处理程序。</p><h2 id="syscall"><a href="#syscall" class="headerlink" title="syscall"></a>syscall</h2><p>syscall属于很常见的一个概念了，在操作系统中用户态程序通常需要使用syscall来使内核处理它的请求，x86与x86_64的syscall有一些区别，在x86中syscall一般会使用中断来处理请求（指令int 0x80，代表触发中断，中断号为0x80）；而在x86_64中syscall与中断是分开处理的，下面会具体介绍syscall的流程，本文不涉及x86中的syscall与中断，所以只会介绍x86_64。</p><h1 id="中断处理流程"><a href="#中断处理流程" class="headerlink" title="中断处理流程"></a>中断处理流程</h1><p>要知道中断处理流程，首先需要了解一个比较重要的概念叫IDT(Interrupt Descriptor Table)，在上面提到，x64的不同中断需要不同的中断处理函数，比如page fault和设备产生的中断显然不能进入同一个函数，那么IDT表就是一个用来指路的表格，当产生一个中断时，中断会根据它的中断号以及这个表格来跳转到特定的中断处理函数。</p><h2 id="IDT"><a href="#IDT" class="headerlink" title="IDT"></a>IDT</h2><p>IDT一共有256个descriptor（x64一共支持256个中断），每个descriptor的大小以及存储的信息一致，IDT存储在内存中，寄存器IDTR存储了它的地址，IDTR有两个域，一个为size，一个为offset，分别存储IDT的大小以及虚拟地址，下面给出descriptor的信息：</p><p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202303091504402.png" alt="image-20230309150428300"></p><p>每个descriptor的大小为128bit，其中0~16，48~64，64~96（x~y代表[x,y))组合在一起组成了一个地址，代表的是这个中断号的处理函数地址，P字段代表这个descriptor是否有效，DPL代表哪个权限级可以通过int指令来触发这个中断，TYPE代表这个descriptor的类型，descriptor一共有两个类型：Interrupt gate；Trap gate。他们的区别主要在处理该中断时是否禁用外部中断，Interrupt gate 会在进入时禁用中断，并在iretq指令返回时启用中断，Trap gate则不会，一般来讲Trap gate主要设置代表异常的中断号，下面编写时不会在意他们的区别，都是用的Interrupt gate。</p><p>IST：IST被栈切换机制使用，它存储的是另外一个结构叫TSS中一个域的index，表现为触发该中断时，栈会被自动切换，在这里不会使用这个字段。</p><p>Segment Selector：它指向的是另一个字段，但包含一些其他的信息：</p><p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202303091532889.png" alt="image-20230309153233844"></p><p>Index为下标，TI代表该segment是在GDT还是LDT中，RPL代表目标Segment的权限级，由于64位中基本不使用segment，因此必须的内容会在下面介绍，其余则不会。</p><h2 id="进入中断处理函数"><a href="#进入中断处理函数" class="headerlink" title="进入中断处理函数"></a>进入中断处理函数</h2><p>在跳转中断处理函数地址前，CPU会进行栈切换，如果是用户态进入内核，则会切换TSS中对应的栈，在这里不会处理在用户态进入内核态时，IST也不为0的情况，在切换完新栈后，CPU会自动将以下内容从上到下以此push到栈中：</p><ul><li>ss （原有Stack Segment）</li><li>rsp （原有Stack pointer）</li><li>RFlags（原有RFlags）</li><li>cs（原有Code Segment）</li><li>rip（CPU正在运行的指令）</li></ul><p>此时Code Segment会被切换为Descriptor中Segment Selector对应的Code Segment，除此之外，如果这个中断是一个异常（page fault等），那么CPU还会push一个额外的error code到栈上</p><h2 id="返回原态"><a href="#返回原态" class="headerlink" title="返回原态"></a>返回原态</h2><p>在使用iretq指令返回原态时，CPU会读取栈上的内容并将其加载进对应的寄存器内，与进入时CPU自动push的内容一致，为ss、rsp、RFlags、cs、rip。</p><h2 id="GDT与TSS"><a href="#GDT与TSS" class="headerlink" title="GDT与TSS"></a>GDT与TSS</h2><p>GDT的存储与IDT类似，存储在内存并由寄存器存储基址，我们在这里不使用Segment，因此只需要正确配置即可，GDT表格与IDT表格的结构也类似，包含若干entry，每个entry包含若干信息，需要注意的是GDT的第一个entry必须要全为0，在64位中，GDT一般配置为包含5个entry（除去第一个全为0的entry），分别为：</p><ul><li>内核代码段</li><li>内核数据段</li><li>用户数据段</li><li>用户代码段</li><li>TSS</li></ul><p>它们里面具体的信息感兴趣可以去<a href="https://wiki.osdev.org/GDT">osdev</a>去查看，我们不使用分段因此只需要根据<a href="https://wiki.osdev.org/GDT_Tutorial">osdev给出的配置单</a>来配置即可，配置好后不必再管，需要注意的是它给的配置单中用户态代码段和用户态数据段的位置似乎反了，原因是在syscall中有一个Star寄存器需要存储这些字段的索引，按照要求ucs的索引应大于uss的索引，所以这些字段的顺序应为（从低到高）：kcs,kss,uss,ucs。我们比较关心的是TSS字段。</p><p>TSS总长0x68 bytes，在64位中包含三个字段，IOPB, IST, RSP，其中IST代表的是之前提到的用于中断切换栈使用的字段，我们主要关心RSP字段:</p><p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202303091623504.png" alt="image-20230309162311427"></p><p>它们代表的是当CPU切换了特权级（从低特权到高特权）时，会将栈切换为这上面对应的字段，比如从用户态（Ring 3）进入内核态（Ring 0）就会切换栈为RSP0内的值。</p><h1 id="syscall-1"><a href="#syscall-1" class="headerlink" title="syscall"></a>syscall</h1><p>在64位中，syscall被单独抽出来了，主要有两个指令，syscall与sysret，他们将会使用三种MSR寄存器，分别为：</p><ol><li>STAR：存储sysret以及syscall指令执行时，会切换的CS与SS字段</li><li>LSTAR：存储syscall指令执行时会跳转的虚拟地址</li><li>SFMask：存储syscall指令执行时，RFlags被mask掉的bit</li></ol><p>需要说明的是STAR寄存器，它的结构如下：</p><p><img src="http://typora-upload-picture.oss-cn-hangzhou.aliyuncs.com/img/202303091646037.png" alt="image-20230309164649996"></p><p>最高位存储的是sysret执行时切换的CS与SS字段index（在GDT中），计算方式为：</p><ul><li>CS：（value+16）</li><li>SS：（value+8）</li></ul><p>次高位存储的是syscall执行时切换的CS与SS字段index（在GDT中），计算方式为：</p><ul><li>CS：value</li><li>SS：（value+8）</li></ul><p>当syscall指令执行时，CPU会切换CS与SS，将RFlags加载进r11中，Mask RFlags，将rip加载进rcx中，跳转到LSTAR存储的虚拟地址。注意内核需要第一时间切换用户栈与内核栈，CPU不会去自行切换栈。</p><p>当sysret指令执行时，CPU会切换CS与SS，将r11加载进Rflags中，将rcx加载进rip中。在这里面需要注意的是其他寄存器特别是rsp不会自动切换，需要内核去切换。</p><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>中断和syscall还是比较重要的，毕竟操作系统的运行基本是正常运行+一堆syscall与中断，中断和syscall处理会涉及到特别多的汇编代码，写起来和看起来比较痛苦，但是是必经之路，搞清楚这里面的逻辑才能在写汇编时减少难度。下一步会总结一下APIC的内容，那个是x86平台的中断控制器了，也是比较重要的一栏。</p><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol><li><a href="https://wiki.osdev.org/IDT">IDT</a></li><li><a href="https://wiki.osdev.org/GDT">GDT</a></li><li><a href="https://wiki.osdev.org/TSS">TSS</a></li><li><a href="https://wiki.osdev.org/SYSENTER">syscall</a></li><li>Intel® 64 and IA-32 Architectures Software Developer’s Manual-vol-3abcd</li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> x86学习记录 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> x86_64 </tag>
+            
+            <tag> 中断 </tag>
+            
+            <tag> 异常 </tag>
+            
+            <tag> syscall </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Virtio文档阅读笔记(三)具体设备</title>
       <link href="/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/"/>
       <url>/2022/09/17/virtio%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0-%E4%B8%89-%E5%85%B7%E4%BD%93%E8%AE%BE%E5%A4%87/</url>
